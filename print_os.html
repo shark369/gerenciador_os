@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>&nbsp;</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="menu.html" class="back-to-menu-btn">Voltar ao Menu</a>
+    <div id="print-area">
+        <!-- Client's Copy (Initially Hidden) -->
+        <div id="client-copy" style="display: none;">
+            <div class="print-container">
+                <div class="print-header">
+                    <h2>Ordem de Serviço - Via do Cliente</h2>
+                    <p>STAMPEX COMUNICAÇÃO VISUAL</p>
+                </div>
+                <div class="osData-client">
+                    <!-- Client data will be populated by script -->
+                </div>
+            </div>
+        </div>
+        <!-- Production Copy -->
+        <div id="production-copy">
+            <div class="print-container">
+                <div class="print-header">
+                    <h2>Ordem de Serviço - Via da Produção</h2>
+                </div>
+                <div class="osData-production">
+                    <!-- Production data will be populated by script -->
+                </div>
+                 <div class="reference-image-container">
+                    <h4>Imagem de Referência:</h4>
+                    <div id="image-box" contenteditable="true">
+                        <img id="pastedImage" src="" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="print-actions">
+        <div class="checkbox-container">
+            <input type="checkbox" id="duplicate-check" name="duplicate-check">
+            <label for="duplicate-check">Imprimir via do Cliente</label>
+        </div>
+        <button type="button" onclick="printOS()">Imprimir</button>
+    </div>
+
+    <script>
+        const imageBox = document.getElementById('image-box');
+        const pastedImage = document.getElementById('pastedImage');
+        const duplicateCheck = document.getElementById('duplicate-check');
+        const clientCopy = document.getElementById('client-copy');
+
+        imageBox.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'v') { return; }
+            event.preventDefault();
+        });
+
+        imageBox.addEventListener('paste', function(event) {
+            event.preventDefault();
+            let items = (event.clipboardData || window.clipboardData).items;
+            let blob = null;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf("image") === 0) { blob = items[i].getAsFile(); }
+            }
+            if (blob !== null) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    pastedImage.src = event.target.result;
+                    pastedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(blob);
+            }
+        });
+        
+        duplicateCheck.addEventListener('change', function() {
+            const showClientCopy = this.checked;
+            const printArea = document.getElementById('print-area');
+            clientCopy.style.display = showClientCopy ? 'block' : 'none';
+
+            if (showClientCopy) {
+                printArea.classList.add('printing-both-copies');
+            } else {
+                printArea.classList.remove('printing-both-copies');
+            }
+        });
+
+        function displayOSData() {
+            const osData = JSON.parse(localStorage.getItem('osData'));
+            const clientContainer = document.querySelector('.osData-client');
+            const productionContainer = document.querySelector('.osData-production');
+
+            if (osData) {
+                const date = new Date(osData.osDate);
+                const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+
+                // --- Populate Client Copy (Full details, no image) ---
+                let clientProductsHtml = '';
+                osData.products.forEach(product => {
+                    clientProductsHtml += `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td class="td-quantity">${product.quantity}</td>
+                            <td>R$ ${parseFloat(product.value).toFixed(2)}</td>
+                            <td>R$ ${(product.quantity * product.value).toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+                const discountText = osData.discount.type === 'percentage' ? `${osData.discount.value}%` : `R$ ${parseFloat(osData.discount.value).toFixed(2)}`;
+                const clientHtml = `
+                    <div class="os-details">
+                        <div>
+                            <p><strong>Cliente:</strong> ${osData.clientName}</p>
+                            <p><strong>Descrição:</strong> ${osData.description || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p><strong>OS ID:</strong> ${osData.osId}</p>
+                            <p><strong>Data:</strong> ${formattedDate}</p>
+                            <p class="no-print"><strong>Status:</strong> ${osData.status}</p>
+                        </div>
+                    </div>
+                    <table class="products-table">
+                        <thead>
+                            <tr><th>Produto</th><th>Quantidade</th><th>Valor Unit.</th><th>Valor Total</th></tr>
+                        </thead>
+                        <tbody>${clientProductsHtml}</tbody>
+                    </table>
+                    <div class="summary">
+                        <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalValue).toFixed(2)}</p>
+                        <p><strong>Desconto/Pgto:</strong> ${discountText}</p>
+                        <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totalDue).toFixed(2)}</p>
+                    </div>`;
+                clientContainer.innerHTML = clientHtml;
+
+                // --- Populate Production Copy (Products, quantities, and date) ---
+                let productionProductsHtml = '';
+                osData.products.forEach(product => {
+                    productionProductsHtml += `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td class="td-quantity">${product.quantity}</td>
+                        </tr>
+                    `;
+                });
+                const productionHtml = `
+                     <div class="os-details">
+                        <div>
+                            <p><strong>OS ID:</strong> ${osData.osId}</p>
+                            <p><strong>Cliente:</strong> ${osData.clientName}</p>
+                        </div>
+                        <div>
+                            <p><strong>Data:</strong> ${formattedDate}</p>
+                        </div>
+                    </div>
+                    <table class="products-table">
+                        <thead><tr><th>Produto</th><th>Quantidade</th></tr></thead>
+                        <tbody>${productionProductsHtml}</tbody>
+                    </table>`;
+                productionContainer.innerHTML = productionHtml;
+
+            } else {
+                clientContainer.innerHTML = '<p>Nenhum dado da OS encontrado.</p>';
+                productionContainer.innerHTML = '';
+            }
+        }
+
+        function printOS() {
+            window.print();
+        }
+
+        window.onload = displayOSData;
+    </script>
+</body>
+</html>
