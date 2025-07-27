@@ -1,3 +1,4 @@
+require('dotenv').config(); // Load .env file
 const fs = require('fs');
 const logStream = fs.createWriteStream('log.txt', { flags: 'a' });
 console.log = function(d) {
@@ -35,10 +36,7 @@ app.use(express.static(__dirname));
 
 // MySQL Connection Pool
 const pool = mysql.createPool({
-    host: 'localhost', // Replace with your MySQL host
-    user: 'root',      // Replace with your MySQL username
-    password: 'Shark@9919', // Replace with your MySQL password
-    database: 'gerenciador_os_db', // Replace with your database name
+    uri: process.env.DATABASE_URL, // Use the connection URL from .env
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
