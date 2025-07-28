@@ -44,7 +44,7 @@ async function openPrintWindow() {
     };
 
     try {
-        const response = await fetch('http://localhost:3001/api/serviceOrders', {
+        const response = await fetch('/api/serviceOrders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

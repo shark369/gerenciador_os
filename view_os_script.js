@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize Socket.IO client
-    const socket = io('http://localhost:3001'); // Connect to backend Socket.IO server
+    const socket = io(); // Connect to backend Socket.IO server on the same host
 
     socket.on('newOS', (newOs) => {
         console.log('Nova OS recebida via Socket.IO:', newOs);
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // No logout button functionality needed here as it's removed from view_os.html
 
     async function fetchServiceOrders() {
-        let url = 'http://localhost:3001/api/serviceOrders';
+        let url = '/api/serviceOrders';
         
         // Add role to URL for backend filtering
         if (userRole) {
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             updatedData.products = JSON.stringify(updatedData.products);
 
 
-            const response = await fetch(`http://localhost:3001/api/serviceOrders/${osId}`, {
+            const response = await fetch(`/api/serviceOrders/${osId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData)
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:3001/api/serviceOrders/${osId}`, {
+            const response = await fetch(`/api/serviceOrders/${osId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: loggedInUsername }) // Send username for security check
