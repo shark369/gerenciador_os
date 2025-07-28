@@ -1,4 +1,6 @@
-require('dotenv').config(); // Load .env file
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const fs = require('fs');
 const logStream = fs.createWriteStream('log.txt', { flags: 'a' });
 console.log = function(d) {
@@ -43,7 +45,11 @@ const pool = mysql.createPool({
 });
 
 // Test MySQL connection
-console.log('Tentando conectar ao banco de dados com URI:', process.env.DATABASE_URL ? 'URI encontrada.' : 'URI NÃO encontrada.');
+if (!process.env.DATABASE_URL) {
+    console.error('ERRO CRÍTICO: A variável de ambiente DATABASE_URL não está definida.');
+    process.exit(1);
+}
+console.log('Tentando conectar ao banco de dados...');
 pool.getConnection()
     .then(connection => {
         console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
