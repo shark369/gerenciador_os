@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let allServiceOrders = []; // Store all fetched service orders
     const userRole = sessionStorage.getItem('userRole'); // Get user role once
+    const loggedInUsername = sessionStorage.getItem('username'); // Get username
     console.log('User Role:', userRole); // Debug: Print user role
 
     // Conditional visibility for menu and search/filter
@@ -38,10 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             url += `?role=${userRole}`;
         }
 
-        // For grafica and impressao, initially fetch only pending orders
-        if (userRole === 'grafica' || userRole === 'impressao') {
-            url += (userRole ? '&' : '?') + 'status=Pendente'; // Add status filter
-        }
+        // Backend now handles filtering by role correctly
 
         console.log('Fetching URL:', url); // Debug: Print the URL being fetched
 
@@ -110,11 +108,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             acc[clientName].orders.push(os);
 
-            const totalVal = parseFloat(os.totalValue) || 0;
-            if (os.status === 'Pendente') {
-            acc[clientName].balance += (parseFloat(os.totalDue) || 0); // Sum totalDue for pending orders
+            // Sum totalDue for any non-paid orders
+            if (os.status !== 'Paga') {
+                acc[clientName].balance += (parseFloat(os.totalDue) || 0);
             }
-            // If "Concluída", totalDue is 0, so it doesn't affect the balance
             return acc;
         }, {});
 
@@ -153,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <strong>ID da OS:</strong> ${os.osId}<br>
+                    <strong>Celular:</strong> ${os.clientPhone || 'N/A'}<br>
                     <strong>Descrição:</strong> ${os.description}<br>
                     <strong>Status:</strong> ${os.status}<br>
                     ${productsHtml}
@@ -161,15 +159,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <strong>Total a Pagar:</strong> R$ ${totalDue.toFixed(2)}<br>
                     <small>Criado por: ${os.createdBy || 'N/A'} em: ${new Date(os.createdAt).toLocaleString()}</small>
                 `;
-                // Add "Marcar como Concluído" button for pending orders for grafica/impressao roles
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.classList.add('os-actions');
+
+                // --- Actions for Recepcao ---
+                if (userRole === 'recepcao') {
+                    const canEditOrRemove = !(loggedInUsername === 'tarcio' || loggedInUsername === 'safira');
+
+                    if (canEditOrRemove) {
+                        const editButton = document.createElement('button');
+                        editButton.textContent = 'Editar';
+                        editButton.onclick = () => window.location.href = `edit_os.html?id=${os.id}`;
+                        actionsDiv.appendChild(editButton);
+
+                        const removeButton = document.createElement('button');
+                        removeButton.textContent = 'Remover';
+                        removeButton.classList.add('remove-os-btn');
+                        removeButton.dataset.id = os.id;
+                        actionsDiv.appendChild(removeButton);
+                    }
+
+                    const statusSelect = document.createElement('select');
+                    statusSelect.classList.add('status-select');
+                    statusSelect.dataset.id = os.id;
+                    ['Pendente', 'Concluída', 'Paga'].forEach(status => {
+                        const option = document.createElement('option');
+                        option.value = status;
+                        option.textContent = status;
+                        if (os.status === status) option.selected = true;
+                        statusSelect.appendChild(option);
+                    });
+                    actionsDiv.appendChild(statusSelect);
+                }
+
+                // --- Actions for Grafica/Impressao ---
                 if ((userRole === 'grafica' || userRole === 'impressao') && os.status === 'Pendente') {
                     const completeButton = document.createElement('button');
                     completeButton.textContent = 'Marcar como Concluído';
-                    completeButton.classList.add('complete-os-btn');
+                    completeButton.classList.add('update-status-btn');
                     completeButton.dataset.id = os.id;
-                    li.appendChild(completeButton);
+                    completeButton.dataset.newstatus = 'Concluída';
+                    actionsDiv.appendChild(completeButton);
                 }
-                li.innerHTML += `<hr>`; // Add HR after button or directly after content
+                
+                li.appendChild(actionsDiv);
+                li.innerHTML += `<hr>`;
                 ul.appendChild(li);
             });
             clientGroupDiv.appendChild(ul);
@@ -186,73 +221,87 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     statusFilterSelect.addEventListener('change', applyFilters);
 
-    // Event listener for "Marcar como Concluído" buttons
-    osListContainer.addEventListener('click', async (event) => {
-        if (event.target.classList.contains('complete-os-btn')) {
-            const osDbId = event.target.dataset.id; // This is the database ID
-            if (confirm('Tem certeza que deseja marcar esta OS como Concluída?')) {
-                try {
-                    // First, fetch the complete OS data
-                    const fetchResponse = await fetch(`http://localhost:3001/api/serviceOrders/${osDbId}`);
-                    if (!fetchResponse.ok) {
-                        throw new Error(`HTTP error! status: ${fetchResponse.status}`);
-                    }
-                    const osToUpdate = await fetchResponse.json();
+    async function updateOsStatus(osId, newStatus) {
+        try {
+            const osToUpdate = allServiceOrders.find(os => os.id == osId);
+            if (!osToUpdate) throw new Error('OS não encontrada.');
 
-                    // Ensure products is an array of objects, not a string
-                    if (typeof osToUpdate.products === 'string') {
-                        osToUpdate.products = JSON.parse(osToUpdate.products);
-                    }
+            // Prepare data for PUT request
+            const updatedData = { ...osToUpdate, status: newStatus, userRole: userRole };
+            // Ensure products is a string for the backend
+            updatedData.products = JSON.stringify(updatedData.products);
 
-                    // Update the status
-                    osToUpdate.status = 'Concluída';
-                    osToUpdate.totalDue = 0; // Set totalDue to 0 when completed
 
-                    // Prepare data for PUT request, ensuring all fields are present
-                    const updatedData = {
-                        osId: osToUpdate.osId,
-                        clientName: osToUpdate.clientName,
-                        osDate: osToUpdate.osDate.split('T')[0], // Format date for input type="date"
-                        description: osToUpdate.description,
-                        status: osToUpdate.status,
-                        products: osToUpdate.products,
-                        discount: {
-                            type: osToUpdate.discountType,
-                            value: osToUpdate.discountValue
-                        },
-                        totalValue: osToUpdate.totalValue,
-                        totalDue: osToUpdate.totalDue,
-                        sector: osToUpdate.sector
-                    };
+            const response = await fetch(`http://localhost:3001/api/serviceOrders/${osId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
 
-                    const response = await fetch(`http://localhost:3001/api/serviceOrders/${osDbId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(updatedData)
-                    });
-
-                    if (response.ok) {
-                        alert('OS marcada como Concluída com sucesso!');
-                        fetchServiceOrders(); // Refresh the list
-                    } else {
-                        const errorData = await response.json();
-                        alert(`Erro ao marcar OS como Concluída: ${errorData.message || response.statusText}`);
-                    }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    alert('Erro de conexão ao marcar OS como Concluída.');
-                }
+            if (response.ok) {
+                alert('Status da OS atualizado com sucesso!');
+                fetchServiceOrders(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Erro ao atualizar status: ${errorData.message || response.statusText}`);
             }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro de conexão ao atualizar status da OS.');
+        }
+    }
+    
+    async function removeOs(osId) {
+        if (!confirm('Tem certeza que deseja remover esta Ordem de Serviço? Esta ação não pode ser desfeita.')) {
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:3001/api/serviceOrders/${osId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: loggedInUsername }) // Send username for security check
+            });
+
+            if (response.ok) {
+                alert('Ordem de Serviço removida com sucesso!');
+                fetchServiceOrders(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Erro ao remover OS: ${errorData.message || response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro de conexão ao remover OS.');
+        }
+    }
+
+
+    // Event listener for all actions
+    osListContainer.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (target.classList.contains('update-status-btn')) {
+            const osId = target.dataset.id;
+            const newStatus = target.dataset.newstatus;
+            if (confirm(`Tem certeza que deseja marcar esta OS como ${newStatus}?`)) {
+                updateOsStatus(osId, newStatus);
+            }
+        }
+        if (target.classList.contains('remove-os-btn')) {
+            const osId = target.dataset.id;
+            removeOs(osId);
+        }
+    });
+    
+    osListContainer.addEventListener('change', async (event) => {
+        const target = event.target;
+        if (target.classList.contains('status-select')) {
+            const osId = target.dataset.id;
+            const newStatus = target.value;
+            updateOsStatus(osId, newStatus);
         }
     });
 
+
     // Initial fetch and display
     fetchServiceOrders();
-
-    // Auto-refresh for grafica and impressao digital roles
-    if (userRole === 'grafica' || userRole === 'impressao') {
-        setInterval(fetchServiceOrders, 500); // Refresh every 0.5 seconds
-    }
 });

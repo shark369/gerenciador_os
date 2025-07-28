@@ -6,6 +6,7 @@ const loggedInUsername = sessionStorage.getItem('username');
 
 async function openPrintWindow() {
     const clientName = document.getElementById('clientName').value;
+    const clientPhone = document.getElementById('clientPhone').value;
     const osId = document.getElementById('osId').value;
     const osDate = document.getElementById('osDate').value;
     const description = document.getElementById('description').value;
@@ -26,6 +27,7 @@ async function openPrintWindow() {
     const newServiceOrder = {
         osId,
         clientName,
+        clientPhone,
         osDate,
         description,
         status,

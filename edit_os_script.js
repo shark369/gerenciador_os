@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <input type="text" id="editClientName" name="editClientName" required>
                 </div>
                 <div class="input-group">
+                    <label for="editClientPhone">Celular:</label>
+                    <input type="text" id="editClientPhone" name="editClientPhone" required>
+                </div>
+                <div class="input-group">
                     <label for="editOsId">ID da OS:</label>
                     <input type="text" id="editOsId" name="editOsId" readonly>
                 </div>
@@ -71,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <select id="editStatus" name="editStatus">
                     <option value="Pendente">Pendente</option>
                     <option value="Concluída">Concluída</option>
+                    <option value="Paga">Paga</option>
                 </select>
             </div>
 
@@ -136,7 +141,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('editTotalValue').value = subtotal.toFixed(2); // Valor Total da OS é a soma dos produtos
 
         let totalAPagar = subtotal - discountAmount;
-        if (editStatusSelect.value === 'Concluída') { // Check status for Total a Pagar
+        // Logic moved to backend, but we can replicate for immediate UI feedback
+        if (editStatusSelect.value === 'Paga') { 
             totalAPagar = 0;
         }
         document.getElementById('editTotalDue').value = totalAPagar.toFixed(2); // Update Total a Pagar
@@ -187,8 +193,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function displayServiceOrders(serviceOrders) {
         osListDiv.innerHTML = ''; // Clear previous list
         
-        // Filter out service orders with status "Concluída"
-        const editableServiceOrders = serviceOrders.filter(os => os.status !== 'Concluída');
+        // Filter out service orders with status "Paga"
+        const editableServiceOrders = serviceOrders.filter(os => os.status !== 'Paga');
 
         if (editableServiceOrders.length === 0) {
             osListDiv.innerHTML = '<p>Nenhuma Ordem de Serviço pendente ou em andamento encontrada para editar.</p>';
@@ -220,6 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('editOsIdHidden').value = osToEdit.id;
                     document.getElementById('editOsId').value = osToEdit.osId;
                     document.getElementById('editClientName').value = osToEdit.clientName;
+                    document.getElementById('editClientPhone').value = osToEdit.clientPhone || ''; // Populate phone
                     document.getElementById('editOsDate').value = osToEdit.osDate;
                     document.getElementById('editDescription').value = osToEdit.description;
                     document.getElementById('editStatus').value = osToEdit.status;
@@ -311,6 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const osIdHidden = document.getElementById('editOsIdHidden').value;
         const osId = document.getElementById('editOsId').value;
         const clientName = document.getElementById('editClientName').value;
+        const clientPhone = document.getElementById('editClientPhone').value; // Get phone value
         let osDate = document.getElementById('editOsDate').value; // Use let to allow modification
         const description = document.getElementById('editDescription').value;
         const status = document.getElementById('editStatus').value;
@@ -342,6 +350,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const updatedOs = {
             osId,
             clientName,
+            clientPhone,
             osDate,
             description,
             status,

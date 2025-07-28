@@ -53,6 +53,7 @@ pool.getConnection()
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 osId VARCHAR(255) UNIQUE NOT NULL,
                 clientName VARCHAR(255) NOT NULL,
+                clientPhone VARCHAR(20), -- New column for phone number
                 osDate DATE NOT NULL,
                 description TEXT,
                 status VARCHAR(50) NOT NULL,
@@ -213,16 +214,20 @@ app.get('/api/serviceOrders/:id', async (req, res) => {
 
 // POST a new service order
 app.post('/api/serviceOrders', async (req, res) => {
-    const { osId, clientName, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy } = req.body; // Added totalDue, sector, and createdBy
+    const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy } = req.body;
     const productsJson = JSON.stringify(products);
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
+    if (!clientName || !clientPhone) {
+        return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
+    }
+
     try {
 
         const [result] = await pool.execute(
-            'INSERT INTO service_orders (osId, clientName, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', // Added createdBy column
-            [osId, clientName, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy] // Added createdBy value
+            'INSERT INTO service_orders (osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy]
         );
         const newOsId = result.insertId;
         // Fetch the newly added OS to emit its full data
@@ -241,20 +246,41 @@ app.post('/api/serviceOrders', async (req, res) => {
 // PUT (update) an existing service order
 app.put('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
-    const { osId, clientName, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy } = req.body; // Added totalDue, sector, and createdBy
+    const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy, userRole } = req.body;
     const productsJson = JSON.stringify(products);
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
+    if (!clientName || !clientPhone) {
+        return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
+    }
+
+    // Security check for edit/remove permissions
+    const [userRows] = await pool.execute('SELECT role FROM users WHERE username = ?', [createdBy]);
+    const editorRole = userRows.length > 0 ? userRows[0].role : '';
+
+    if ((createdBy === 'tarcio' || createdBy === 'safira') && editorRole === 'recepcao') {
+        // Allow them to only change the status
+        if (Object.keys(req.body).length > 2 || !req.body.status) { // a simple check
+             return res.status(403).json({ message: 'Este usuário não tem permissão para editar a OS, apenas alterar o status.' });
+        }
+    }
+
+    let newTotalDue = totalDue;
+    // If status is changed to "Paga" by recepcao, zero out the totalDue
+    if (status === 'Paga' && userRole === 'recepcao') {
+        newTotalDue = 0;
+    }
+
     try {
         const [result] = await pool.execute(
-            'UPDATE service_orders SET osId = ?, clientName = ?, osDate = ?, description = ?, status = ?, products = ?, discountType = ?, discountValue = ?, totalValue = ?, totalDue = ?, sector = ?, createdBy = ? WHERE id = ?', // Added createdBy column
-            [osId, clientName, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy, id] // Added createdBy value
+            'UPDATE service_orders SET osId = ?, clientName = ?, clientPhone = ?, osDate = ?, description = ?, status = ?, products = ?, discountType = ?, discountValue = ?, totalValue = ?, totalDue = ?, sector = ?, createdBy = ? WHERE id = ?',
+            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, newTotalDue, sector, createdBy, id]
         );
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Ordem de serviรงo nรฃo encontrada.' });
+            return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
-        res.json({ message: 'Ordem de serviรงo atualizada com sucesso!' });
+        res.json({ message: 'Ordem de serviço atualizada com sucesso!' });
     } catch (err) {
         console.error('Erro ao atualizar ordem de serviço:', err);
         res.status(500).json({ message: 'Erro ao atualizar ordem de serviço.', error: err.message });
@@ -264,15 +290,25 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
 // DELETE a service order
 app.delete('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
+    const { username } = req.body; // Get username from request body for security check
+
+    // Security check for delete permissions
+    const [userRows] = await pool.execute('SELECT role FROM users WHERE username = ?', [username]);
+    const deleterRole = userRows.length > 0 ? userRows[0].role : '';
+
+    if ((username === 'tarcio' || username === 'safira') && deleterRole === 'recepcao') {
+        return res.status(403).json({ message: 'Este usuário não tem permissão para remover Ordens de Serviço.' });
+    }
+
     try {
         const [result] = await pool.execute('DELETE FROM service_orders WHERE id = ?', [id]);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Ordem de serviรงo nรฃo encontrada.' });
+            return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
-        res.json({ message: 'Ordem de serviรงo removida com sucesso!' });
+        res.json({ message: 'Ordem de serviço removida com sucesso!' });
     } catch (err) {
-        console.error('Erro ao remover ordem de serviรงo:', err);
-        res.status(500).json({ message: 'Erro ao remover ordem de serviรงo.' });
+        console.error('Erro ao remover ordem de serviço:', err);
+        res.status(500).json({ message: 'Erro ao remover ordem de serviço.' });
     }
 });
 
