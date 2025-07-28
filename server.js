@@ -45,6 +45,7 @@ const pool = mysql.createPool({
 });
 
 // Test MySQL connection
+/*
 if (!process.env.DATABASE_URL) {
     console.error('ERRO CRÍTICO: A variável de ambiente DATABASE_URL não está definida.');
     process.exit(1);
@@ -131,6 +132,7 @@ pool.getConnection()
     .catch(err => {
         console.error('ERRO CRÍTICO NA INICIALIZAÇÃO DO BANCO DE DADOS:', err.stack);
     });
+*/
 
 // API Routes
 
