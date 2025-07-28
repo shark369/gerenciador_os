@@ -43,9 +43,10 @@ const pool = mysql.createPool({
 });
 
 // Test MySQL connection
+console.log('Tentando conectar ao banco de dados com URI:', process.env.DATABASE_URL ? 'URI encontrada.' : 'URI NÃO encontrada.');
 pool.getConnection()
     .then(connection => {
-        console.log('Conectado ao banco de dados MySQL!');
+        console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
         connection.release();
         // Create service_orders table if it doesn't exist
         return pool.execute(`
@@ -122,7 +123,7 @@ pool.getConnection()
         }
     })
     .catch(err => {
-        console.error('Erro na inicialização do banco de dados:', err);
+        console.error('ERRO CRÍTICO NA INICIALIZAÇÃO DO BANCO DE DADOS:', err.stack);
     });
 
 // API Routes
