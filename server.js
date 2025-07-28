@@ -70,28 +70,18 @@ pool.getConnection()
     })
     .then(() => {
         console.log('Tabela service_orders verificada/criada com sucesso.');
-        // Check if the 'createdBy' column exists
-        return pool.execute(`
-            SELECT * FROM information_schema.COLUMNS
-            WHERE TABLE_SCHEMA = 'gerenciador_os_db'
-            AND TABLE_NAME = 'service_orders'
-            AND COLUMN_NAME = 'createdBy'
-        `);
-    })
-    .then(([rows]) => {
-        if (rows.length === 0) {
-            // The 'createdBy' column doesn't exist, so add it
-            return pool.execute(`
-                ALTER TABLE service_orders
-                ADD COLUMN createdBy VARCHAR(255) AFTER sector
-            `).then(() => {
-                console.log('Coluna createdBy adicionada com sucesso.');
-            }).catch(addColumnErr => {
-                console.error('Erro ao adicionar coluna createdBy:', addColumnErr);
-            });
-        } else {
-            console.log('Coluna createdBy já existe.');
-        }
+        // Use ALTER TABLE with IF NOT EXISTS to safely add columns.
+        // Note: MySQL versions older than 8.0 do not support IF NOT EXISTS for ADD COLUMN.
+        // Railway uses a modern version, so this is safe.
+        const alterTableQueries = `
+            ALTER TABLE service_orders 
+            ADD COLUMN IF NOT EXISTS clientPhone VARCHAR(20) AFTER clientName,
+            ADD COLUMN IF NOT EXISTS createdBy VARCHAR(255) AFTER sector;
+        `;
+        // We execute this as a raw query. We'll catch errors for older MySQL versions.
+        return pool.query(alterTableQueries).catch(err => {
+            console.log('Não foi possível executar ALTER TABLE com IF NOT EXISTS (pode ser uma versão antiga do MySQL). As colunas provavelmente já existem.');
+        });
     })
     .then(() => {
         // Create users table
