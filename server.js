@@ -162,8 +162,8 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ message: 'Usuário ou senha incorretos.' });
         }
     } catch (err) {
-        console.error('Erro no login:', err);
-        res.status(500).json({ message: 'Erro interno no servidor.' });
+        console.error('Erro ao adicionar ordem de serviço:', err.stack);
+        res.status(500).json({ message: 'Erro ao adicionar ordem de serviço.', error: err.message });
     }
 });
 
