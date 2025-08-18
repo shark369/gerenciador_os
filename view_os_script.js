@@ -165,21 +165,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // --- Actions for Recepcao ---
                 if (userRole === 'recepcao') {
-                    const canEditOrRemove = !(loggedInUsername === 'tarcio' || loggedInUsername === 'safira');
-
-                    if (canEditOrRemove) {
-                        const editButton = document.createElement('button');
-                        editButton.textContent = 'Editar';
-                        editButton.onclick = () => window.location.href = `edit_os.html?id=${os.id}`;
-                        actionsDiv.appendChild(editButton);
-
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remover';
-                        removeButton.classList.add('remove-os-btn');
-                        removeButton.dataset.id = os.id;
-                        actionsDiv.appendChild(removeButton);
-                    }
-
                     const statusSelect = document.createElement('select');
                     statusSelect.classList.add('status-select');
                     statusSelect.dataset.id = os.id;
