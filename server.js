@@ -3,9 +3,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const fs = require('fs');
 const logStream = fs.createWriteStream('log.txt', { flags: 'a' });
-console.log = function(d) {
-  logStream.write(new Date().toISOString() + ': ' + d + '\n');
-  process.stdout.write(new Date().toISOString() + ': ' + d + '\n');
+console.log = function(...args) {
+  const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+  logStream.write(new Date().toISOString() + ': ' + message + '\n');
+  process.stdout.write(new Date().toISOString() + ': ' + message + '\n');
 };
 console.error = console.log;
 
@@ -36,6 +37,20 @@ app.use(express.json());
 // Serve static files from the current directory
 app.use(express.static(__dirname));
 
+// Serve HTML files
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/:filename', (req, res) => {
+    const { filename } = req.params;
+    if (filename.endsWith('.html')) {
+        res.sendFile(path.join(__dirname, filename));
+    } else {
+        res.status(404).send('File not found');
+    }
+});
+
 // MySQL Connection Pool
 const pool = mysql.createPool({
     uri: process.env.DATABASE_URL, // Use the connection URL from .env
@@ -45,7 +60,6 @@ const pool = mysql.createPool({
 });
 
 // Test MySQL connection
-/*
 if (!process.env.DATABASE_URL) {
     console.error('ERRO CRÍTICO: A variável de ambiente DATABASE_URL não está definida.');
     process.exit(1);
@@ -76,20 +90,36 @@ pool.getConnection()
             )
         `);
     })
-    .then(() => {
+    .then(async () => {
         console.log('Tabela service_orders verificada/criada com sucesso.');
-        // Use ALTER TABLE with IF NOT EXISTS to safely add columns.
-        // Note: MySQL versions older than 8.0 do not support IF NOT EXISTS for ADD COLUMN.
-        // Railway uses a modern version, so this is safe.
-        const alterTableQueries = `
-            ALTER TABLE service_orders 
-            ADD COLUMN IF NOT EXISTS clientPhone VARCHAR(20) AFTER clientName,
-            ADD COLUMN IF NOT EXISTS createdBy VARCHAR(255) AFTER sector;
-        `;
-        // We execute this as a raw query. We'll catch errors for older MySQL versions.
-        return pool.query(alterTableQueries).catch(err => {
-            console.log('Não foi possível executar ALTER TABLE com IF NOT EXISTS (pode ser uma versão antiga do MySQL). As colunas provavelmente já existem.');
-        });
+        
+        // Check and add clientPhone column
+        const [phoneRows] = await pool.execute(`
+            SELECT COUNT(*) AS count
+            FROM information_schema.columns
+            WHERE table_schema = DATABASE()
+            AND table_name = 'service_orders'
+            AND column_name = 'clientPhone'
+        `);
+        if (phoneRows[0].count === 0) {
+            console.log('Adicionando coluna clientPhone...');
+            await pool.execute('ALTER TABLE service_orders ADD COLUMN clientPhone VARCHAR(20) AFTER clientName');
+            console.log('Coluna clientPhone adicionada.');
+        }
+
+        // Check and add createdBy column
+        const [createdRows] = await pool.execute(`
+            SELECT COUNT(*) AS count
+            FROM information_schema.columns
+            WHERE table_schema = DATABASE()
+            AND table_name = 'service_orders'
+            AND column_name = 'createdBy'
+        `);
+        if (createdRows[0].count === 0) {
+            console.log('Adicionando coluna createdBy...');
+            await pool.execute('ALTER TABLE service_orders ADD COLUMN createdBy VARCHAR(255) AFTER sector');
+            console.log('Coluna createdBy adicionada.');
+        }
     })
     .then(() => {
         // Create users table
@@ -132,7 +162,6 @@ pool.getConnection()
     .catch(err => {
         console.error('ERRO CRÍTICO NA INICIALIZAÇÃO DO BANCO DE DADOS:', err.stack);
     });
-*/
 
 // API Routes
 
