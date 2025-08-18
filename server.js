@@ -164,8 +164,8 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ message: 'Usuário ou senha incorretos.' });
         }
     } catch (err) {
-        console.error('Erro ao adicionar ordem de serviço:', err.stack);
-        res.status(500).json({ message: 'Erro ao adicionar ordem de serviço.', error: err.message });
+        console.error('Erro ao fazer login:', err.stack);
+        res.status(500).json({ message: 'Erro no servidor durante o login.', error: err.message });
     }
 });
 
@@ -191,7 +191,7 @@ app.get('/api/serviceOrders', async (req, res) => {
         const [rows] = await pool.execute(query, params);
         res.json(rows);
     } catch (err) {
-        console.error('Erro ao buscar ordens de serviço:', err);
+        console.error('Erro ao buscar ordens de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar ordens de serviço.' });
     }
 });
@@ -206,8 +206,8 @@ app.get('/api/serviceOrders/:id', async (req, res) => {
         }
         res.json(rows[0]);
     } catch (err) {
-        console.error('Erro ao buscar ordem de serviรงo:', err);
-        res.status(500).json({ message: 'Erro ao buscar ordem de serviรงo.' });
+        console.error('Erro ao buscar ordem de serviço:', err.stack);
+        res.status(500).json({ message: 'Erro ao buscar ordem de serviço.' });
     }
 });
 
@@ -237,7 +237,7 @@ app.post('/api/serviceOrders', async (req, res) => {
 
         res.status(201).json({ id: newOsId, message: 'Ordem de serviço adicionada com sucesso!' });
     } catch (err) {
-        console.error('Erro ao adicionar ordem de serviço:', err);
+        console.error('Erro ao adicionar ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao adicionar ordem de serviço.', error: err.message });
     }
 });
@@ -281,7 +281,7 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
         }
         res.json({ message: 'Ordem de serviço atualizada com sucesso!' });
     } catch (err) {
-        console.error('Erro ao atualizar ordem de serviço:', err);
+        console.error('Erro ao atualizar ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao atualizar ordem de serviço.', error: err.message });
     }
 });
@@ -306,7 +306,7 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
         }
         res.json({ message: 'Ordem de serviço removida com sucesso!' });
     } catch (err) {
-        console.error('Erro ao remover ordem de serviço:', err);
+        console.error('Erro ao remover ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao remover ordem de serviço.' });
     }
 });
