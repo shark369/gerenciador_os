@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchServiceOrders() {
         try {
-            const response = await fetch('http://localhost:3001/api/serviceOrders');
+            const response = await fetch('/api/serviceOrders');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (confirm(`Tem certeza que deseja remover a OS ${osId} do cliente ${clientName}?`)) {
                     try {
-                        const response = await fetch(`http://localhost:3001/api/serviceOrders/${osId}`, {
+                        const response = await fetch(`/api/serviceOrders/${osId}`, {
                             method: 'DELETE'
                         });
 

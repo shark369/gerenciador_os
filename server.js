@@ -11,22 +11,21 @@ console.log = function(...args) {
 console.error = console.log;
 
 const express = require('express');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg'); // Changed from mysql2 to pg
 const cors = require('cors');
-const http = require('http'); // Import http module
-const { Server } = require('socket.io'); // Import Server from socket.io
-// const open = require('open'); // Import open
-const path = require('path'); // Import path
-const bcrypt = require('bcrypt'); // Import bcrypt
-const saltRounds = 10; // for bcrypt
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const app = express();
 const backendPort = 3001;
 
-const httpServer = http.createServer(app); // Create HTTP server
+const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: `http://localhost:${backendPort}`, // Allow frontend origin
+        origin: `http://localhost:${backendPort}`,
         methods: ["GET", "POST"]
     }
 });
@@ -34,10 +33,8 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the current directory
 app.use(express.static(__dirname));
 
-// Serve HTML files
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -51,31 +48,30 @@ app.get('/:filename', (req, res) => {
     }
 });
 
-// MySQL Connection Pool
-const pool = mysql.createPool({
-    uri: process.env.DATABASE_URL, // Use the connection URL from .env
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+// PostgreSQL Connection Pool
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Test MySQL connection
+// Test PostgreSQL connection and setup schema
 if (!process.env.DATABASE_URL) {
     console.error('ERRO CRÍTICO: A variável de ambiente DATABASE_URL não está definida.');
     process.exit(1);
 }
-console.log('Tentando conectar ao banco de dados...');
-pool.getConnection()
-    .then(connection => {
-        console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
-        connection.release();
-        // Create service_orders table if it doesn't exist
-        return pool.execute(`
+
+console.log('Tentando conectar ao banco de dados PostgreSQL...');
+pool.connect()
+    .then(client => {
+        console.log('Conexão com o banco de dados PostgreSQL estabelecida com sucesso!');
+        
+        // Create service_orders table
+        client.query(`
             CREATE TABLE IF NOT EXISTS service_orders (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 osId VARCHAR(255) UNIQUE NOT NULL,
                 clientName VARCHAR(255) NOT NULL,
-                clientPhone VARCHAR(20), -- New column for phone number
+                clientPhone VARCHAR(20),
                 osDate DATE NOT NULL,
                 description TEXT,
                 status VARCHAR(50) NOT NULL,
@@ -84,84 +80,61 @@ pool.getConnection()
                 discountValue DECIMAL(10, 2),
                 totalValue DECIMAL(10, 2) NOT NULL,
                 totalDue DECIMAL(10, 2) NOT NULL,
-                sector VARCHAR(50), -- New column for sector
-                createdBy VARCHAR(255), -- New column for user who created/saved the OS
-                createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+                sector VARCHAR(50),
+                createdBy VARCHAR(255),
+                createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             )
-        `);
-    })
-    .then(async () => {
-        console.log('Tabela service_orders verificada/criada com sucesso.');
-        
-        // Check and add clientPhone column
-        const [phoneRows] = await pool.execute(`
-            SELECT COUNT(*) AS count
-            FROM information_schema.columns
-            WHERE table_schema = DATABASE()
-            AND table_name = 'service_orders'
-            AND column_name = 'clientPhone'
-        `);
-        if (phoneRows[0].count === 0) {
-            console.log('Adicionando coluna clientPhone...');
-            await pool.execute('ALTER TABLE service_orders ADD COLUMN clientPhone VARCHAR(20) AFTER clientName');
-            console.log('Coluna clientPhone adicionada.');
-        }
+        `)
+        .then(() => {
+            console.log('Tabela service_orders verificada/criada com sucesso.');
+            // Create users table
+            return client.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(255) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    role VARCHAR(50) NOT NULL,
+                    createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+        })
+        .then(() => {
+            console.log('Tabela users verificada/criada com sucesso.');
+            // Check if users table is empty
+            return client.query('SELECT COUNT(*) as count FROM users');
+        })
+        .then(async (result) => {
+            if (result.rows[0].count == 0) {
+                console.log('Populando tabela de usuários...');
+                const users = [
+                    { username: 'jacira', password: '123', role: 'recepcao' },
+                    { username: 'tarcio', password: '123', role: 'recepcao' },
+                    { username: 'safira', password: '123', role: 'recepcao' },
+                    { username: 'grafica', password: '123', role: 'grafica' },
+                    { username: 'impressao', password: '123', role: 'impressao' }
+                ];
 
-        // Check and add createdBy column
-        const [createdRows] = await pool.execute(`
-            SELECT COUNT(*) AS count
-            FROM information_schema.columns
-            WHERE table_schema = DATABASE()
-            AND table_name = 'service_orders'
-            AND column_name = 'createdBy'
-        `);
-        if (createdRows[0].count === 0) {
-            console.log('Adicionando coluna createdBy...');
-            await pool.execute('ALTER TABLE service_orders ADD COLUMN createdBy VARCHAR(255) AFTER sector');
-            console.log('Coluna createdBy adicionada.');
-        }
-    })
-    .then(() => {
-        // Create users table
-        return pool.execute(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(255) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                role VARCHAR(50) NOT NULL,
-                createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-    })
-    .then(() => {
-        console.log('Tabela users verificada/criada com sucesso.');
-        // Check if users table is empty
-        return pool.execute('SELECT COUNT(*) as count FROM users');
-    })
-    .then(async ([rows]) => {
-        if (rows[0].count === 0) {
-            console.log('Populando tabela de usuários...');
-            const users = [
-                { username: 'jacira', password: '123', role: 'recepcao' },
-                { username: 'tarcio', password: '123', role: 'recepcao' },
-                { username: 'safira', password: '123', role: 'recepcao' },
-                { username: 'grafica', password: '123', role: 'grafica' },
-                { username: 'impressao', password: '123', role: 'impressao' }
-            ];
-
-            for (const user of users) {
-                const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-                await pool.execute(
-                    'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-                    [user.username, hashedPassword, user.role]
-                );
+                for (const user of users) {
+                    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+                    await client.query(
+                        'INSERT INTO users (username, password, role) VALUES ($1, $2, $3)',
+                        [user.username, hashedPassword, user.role]
+                    );
+                }
+                console.log('Tabela de usuários populada com sucesso.');
             }
-            console.log('Tabela de usuários populada com sucesso.');
-        }
+        })
+        .catch(err => {
+            console.error('ERRO CRÍTICO NA INICIALIZAÇÃO DO BANCO DE DADOS:', err.stack);
+        })
+        .finally(() => {
+            client.release(); // Release the client back to the pool
+        });
     })
     .catch(err => {
-        console.error('ERRO CRÍTICO NA INICIALIZAÇÃO DO BANCO DE DADOS:', err.stack);
+        console.error('ERRO CRÍTICO AO CONECTAR AO BANCO DE DADOS:', err.stack);
     });
+
 
 // API Routes
 
@@ -174,8 +147,8 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
-        const user = rows[0];
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        const user = result.rows[0];
 
         if (!user) {
             return res.status(401).json({ message: 'Usuário ou senha incorretos.' });
@@ -200,25 +173,23 @@ app.post('/api/login', async (req, res) => {
 
 // GET all service orders
 app.get('/api/serviceOrders', async (req, res) => {
-    const userRole = req.query.role; // Get role from query parameter
+    const userRole = req.query.role;
     let query = 'SELECT * FROM service_orders';
     const params = [];
 
     if (userRole === 'grafica') {
-        query += ' WHERE sector = ? AND status = ?';
+        query += ' WHERE sector = $1 AND status = $2';
         params.push('Grafica', 'Pendente');
     } else if (userRole === 'impressao') {
-        query += ' WHERE sector = ? AND status = ?';
+        query += ' WHERE sector = $1 AND status = $2';
         params.push('Impressao Digital', 'Pendente');
     }
-    // For recepcao, no additional filtering is applied here, as they see all.
-    // If a 'status' query parameter is present for recepcao, it will be handled by frontend filtering in view_os_script.js.
 
     query += ' ORDER BY createdAt DESC';
 
     try {
-        const [rows] = await pool.execute(query, params);
-        res.json(rows);
+        const result = await pool.query(query, params);
+        res.json(result.rows);
     } catch (err) {
         console.error('Erro ao buscar ordens de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar ordens de serviço.' });
@@ -229,11 +200,11 @@ app.get('/api/serviceOrders', async (req, res) => {
 app.get('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [rows] = await pool.execute('SELECT * FROM service_orders WHERE id = ?', [id]);
-        if (rows.length === 0) {
-            return res.status(404).json({ message: 'Ordem de serviรงo nรฃo encontrada.' });
+        const result = await pool.query('SELECT * FROM service_orders WHERE id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
-        res.json(rows[0]);
+        res.json(result.rows[0]);
     } catch (err) {
         console.error('Erro ao buscar ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar ordem de serviço.' });
@@ -252,17 +223,18 @@ app.post('/api/serviceOrders', async (req, res) => {
     }
 
     try {
-
-        const [result] = await pool.execute(
-            'INSERT INTO service_orders (osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        console.log('Iniciando a inserção de nova OS no banco de dados...');
+        const result = await pool.query(
+            'INSERT INTO service_orders (osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
             [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy]
         );
-        const newOsId = result.insertId;
-        // Fetch the newly added OS to emit its full data
-        const [newOsRows] = await pool.execute('SELECT * FROM service_orders WHERE id = ?', [newOsId]);
-        const newOs = newOsRows[0];
+        const newOsId = result.rows[0].id;
+        
+        const newOsResult = await pool.query('SELECT * FROM service_orders WHERE id = $1', [newOsId]);
+        const newOs = newOsResult.rows[0];
 
-        io.emit('newOS', newOs); // Emit event to all connected clients
+        io.emit('newOS', newOs);
+        console.log('Evento newOS emitido via Socket.IO.');
 
         res.status(201).json({ id: newOsId, message: 'Ordem de serviço adicionada com sucesso!' });
     } catch (err) {
@@ -283,29 +255,26 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
-    // Security check for edit/remove permissions
-    const [userRows] = await pool.execute('SELECT role FROM users WHERE username = ?', [createdBy]);
-    const editorRole = userRows.length > 0 ? userRows[0].role : '';
+    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [createdBy]);
+    const editorRole = userResult.rows.length > 0 ? userResult.rows[0].role : '';
 
     if ((createdBy === 'tarcio' || createdBy === 'safira') && editorRole === 'recepcao') {
-        // Allow them to only change the status
-        if (Object.keys(req.body).length > 2 || !req.body.status) { // a simple check
+        if (Object.keys(req.body).length > 2 || !req.body.status) {
              return res.status(403).json({ message: 'Este usuário não tem permissão para editar a OS, apenas alterar o status.' });
         }
     }
 
     let newTotalDue = totalDue;
-    // If status is changed to "Paga" by recepcao, zero out the totalDue
     if (status === 'Paga' && userRole === 'recepcao') {
         newTotalDue = 0;
     }
 
     try {
-        const [result] = await pool.execute(
-            'UPDATE service_orders SET osId = ?, clientName = ?, clientPhone = ?, osDate = ?, description = ?, status = ?, products = ?, discountType = ?, discountValue = ?, totalValue = ?, totalDue = ?, sector = ?, createdBy = ? WHERE id = ?',
+        const result = await pool.query(
+            'UPDATE service_orders SET osId = $1, clientName = $2, clientPhone = $3, osDate = $4, description = $5, status = $6, products = $7, discountType = $8, discountValue = $9, totalValue = $10, totalDue = $11, sector = $12, createdBy = $13 WHERE id = $14',
             [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, newTotalDue, sector, createdBy, id]
         );
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
         res.json({ message: 'Ordem de serviço atualizada com sucesso!' });
@@ -318,19 +287,18 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
 // DELETE a service order
 app.delete('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
-    const { username } = req.body; // Get username from request body for security check
+    const { username } = req.body;
 
-    // Security check for delete permissions
-    const [userRows] = await pool.execute('SELECT role FROM users WHERE username = ?', [username]);
-    const deleterRole = userRows.length > 0 ? userRows[0].role : '';
+    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [username]);
+    const deleterRole = userResult.rows.length > 0 ? userResult.rows[0].role : '';
 
     if ((username === 'tarcio' || username === 'safira') && deleterRole === 'recepcao') {
         return res.status(403).json({ message: 'Este usuário não tem permissão para remover Ordens de Serviço.' });
     }
 
     try {
-        const [result] = await pool.execute('DELETE FROM service_orders WHERE id = ?', [id]);
-        if (result.affectedRows === 0) {
+        const result = await pool.query('DELETE FROM service_orders WHERE id = $1', [id]);
+        if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
         res.json({ message: 'Ordem de serviço removida com sucesso!' });
@@ -344,9 +312,4 @@ httpServer.listen(backendPort, () => {
     const url = `http://localhost:${backendPort}`;
     console.log(`Backend server rodando em ${url}`);
     console.log('Funcionalidade de abrir navegador desativada para teste.');
-    // Specify Chrome as the browser to open
-    // open(url, {app: {name: 'chrome'}}).catch(err => {
-    //     console.error('Não foi possível abrir o Chrome. Tente abrir o endereço manualmente:', url);
-    //     console.error(err);
-    // });
 });
