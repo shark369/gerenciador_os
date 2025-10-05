@@ -213,8 +213,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Prepare data for PUT request
             const updatedData = { ...osToUpdate, status: newStatus, userRole: userRole };
-            // Ensure products is a string for the backend
-            updatedData.products = JSON.stringify(updatedData.products);
+            // The pg driver handles JSON objects automatically, no need to stringify here.
+            // updatedData.products = JSON.stringify(updatedData.products);
 
 
             const response = await fetch(`/api/serviceOrders/${osId}`, {
