@@ -216,7 +216,7 @@ app.get('/api/serviceOrders/:id', async (req, res) => {
 // POST a new service order
 app.post('/api/serviceOrders', async (req, res) => {
     const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy } = req.body;
-    // products is already an object/array from JSON.parse, pg driver handles stringification
+    const productsJson = JSON.stringify(products); // Must stringify for pg driver
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
@@ -228,7 +228,7 @@ app.post('/api/serviceOrders', async (req, res) => {
         console.log('Iniciando a inserção de nova OS no banco de dados...');
         const result = await pool.query(
             'INSERT INTO service_orders (osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
-            [osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy]
+            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy]
         );
         const newOsId = result.rows[0].id;
         
@@ -250,7 +250,7 @@ app.post('/api/serviceOrders', async (req, res) => {
 app.put('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
     const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy, userRole } = req.body;
-    // products is already an object/array from JSON.parse, pg driver handles stringification
+    const productsJson = JSON.stringify(products); // Must stringify for pg driver
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
@@ -275,7 +275,7 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
     try {
         const result = await pool.query(
             'UPDATE service_orders SET osId = $1, clientName = $2, clientPhone = $3, osDate = $4, description = $5, status = $6, products = $7, discountType = $8, discountValue = $9, totalValue = $10, totalDue = $11, sector = $12, createdBy = $13 WHERE id = $14',
-            [osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, newTotalDue, sector, createdBy, id]
+            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, newTotalDue, sector, createdBy, id]
         );
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
