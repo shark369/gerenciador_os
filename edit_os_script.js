@@ -205,11 +205,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         editableServiceOrders.forEach(os => {
             const li = document.createElement('li');
             li.innerHTML = `
-                <strong>ID da OS:</strong> ${os.osId}<br>
-                <strong>Cliente:</strong> ${os.clientName}<br>
+                <strong>ID da OS:</strong> ${os.osid}<br>
+                <strong>Cliente:</strong> ${os.clientname}<br>
                 <strong>Descrição:</strong> ${os.description}<br>
                 <strong>Status:</strong> ${os.status}<br>
-                <small>Criado em: ${new Date(os.createdAt).toLocaleString()}</small>
+                <small>Criado em: ${new Date(os.createdat).toLocaleString()}</small>
                 <button class="edit-btn" data-id="${os.id}">Editar</button>
                 <hr>
             `;
@@ -224,10 +224,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const osToEdit = serviceOrders.find(os => os.id == osId);
                 if (osToEdit) {
                     document.getElementById('editOsIdHidden').value = osToEdit.id;
-                    document.getElementById('editOsId').value = osToEdit.osId;
-                    document.getElementById('editClientName').value = osToEdit.clientName;
-                    document.getElementById('editClientPhone').value = osToEdit.clientPhone || ''; // Populate phone
-                    document.getElementById('editOsDate').value = osToEdit.osDate;
+                    document.getElementById('editOsId').value = osToEdit.osid;
+                    document.getElementById('editClientName').value = osToEdit.clientname;
+                    document.getElementById('editClientPhone').value = osToEdit.clientphone || ''; // Populate phone
+                    document.getElementById('editOsDate').value = osToEdit.osdate;
                     document.getElementById('editDescription').value = osToEdit.description;
                     document.getElementById('editStatus').value = osToEdit.status;
                     
@@ -241,18 +241,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
 
                     // Populate discount
-                    document.getElementById('editDiscountType').value = osToEdit.discountType || 'percentage';
-                    document.getElementById('editDiscountValue').value = osToEdit.discountValue || 0;
+                    document.getElementById('editDiscountType').value = osToEdit.discounttype || 'percentage';
+                    document.getElementById('editDiscountValue').value = osToEdit.discountvalue || 0;
                     
                     // Populate totalDue
-                    document.getElementById('editTotalValue').value = (parseFloat(osToEdit.totalValue) || 0).toFixed(2);
-                    document.getElementById('editTotalDue').value = (parseFloat(osToEdit.totalDue) || 0).toFixed(2);
+                    document.getElementById('editTotalValue').value = (parseFloat(osToEdit.totalvalue) || 0).toFixed(2);
+                    document.getElementById('editTotalDue').value = (parseFloat(osToEdit.totaldue) || 0).toFixed(2);
 
                     // Populate sector
                     document.getElementById('editSector').value = osToEdit.sector || 'Grafica'; // Default to Grafica if not set
 
                     // Store createdBy for later use in update
-                    editFormDiv.dataset.createdBy = osToEdit.createdBy || '';
+                    editFormDiv.dataset.createdBy = osToEdit.createdby || '';
 
                     calculateEditTotal(); // Calculate initial total for edit form
 

@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedStatus = statusFilterSelect.value;
 
         let filteredOrders = allServiceOrders.filter(os => {
-            const matchesSearch = os.clientName.toLowerCase().includes(searchQuery);
+            const matchesSearch = (os.clientname || '').toLowerCase().includes(searchQuery);
             // Only apply status filter if user is recepcao or if status is explicitly 'Todas'
             const matchesStatus = (userRole === 'recepcao' && selectedStatus !== 'Todas' && os.status !== selectedStatus) ? false : true;
             
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Group service orders by client name and calculate balance
         const groupedOrders = serviceOrders.reduce((acc, os) => {
-            const clientName = os.clientName || 'Cliente Desconhecido';
+            const clientName = os.clientname || 'Cliente Desconhecido';
             if (!acc[clientName]) {
                 acc[clientName] = { orders: [], balance: 0 };
             }
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Sum totalDue for any non-paid orders
             if (os.status !== 'Paga') {
-                acc[clientName].balance += (parseFloat(os.totalDue) || 0);
+                acc[clientName].balance += (parseFloat(os.totaldue) || 0);
             }
             return acc;
         }, {});
@@ -134,30 +134,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 let discountInfo = 'Desconto/Pagamento: N/A'; // Default if no discount info
-                // Access discountType and discountValue directly from os object
-                if (os.discountType) { // Check if discountType exists
-                    const discountVal = parseFloat(os.discountValue) || 0;
-                    if (os.discountType === 'percentage') {
+                // Access discounttype and discountvalue directly from os object
+                if (os.discounttype) { // Check if discounttype exists
+                    const discountVal = parseFloat(os.discountvalue) || 0;
+                    if (os.discounttype === 'percentage') {
                         discountInfo = `Desconto/Pagamento: ${discountVal}%`;
-                    } else if (os.discountType === 'fixed') {
+                    } else if (os.discounttype === 'fixed') {
                         discountInfo = `Desconto/Pagamento: R$ ${discountVal.toFixed(2)}`;
                     }
                 }
 
-                const totalVal = parseFloat(os.totalValue) || 0;
-                const totalDue = parseFloat(os.totalDue) || 0; // Use the fetched totalDue
+                const totalVal = parseFloat(os.totalvalue) || 0;
+                const totalDue = parseFloat(os.totaldue) || 0; // Use the fetched totaldue
 
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <strong>ID da OS:</strong> ${os.osId}<br>
-                    <strong>Celular:</strong> ${os.clientPhone || 'N/A'}<br>
+                    <strong>ID da OS:</strong> ${os.osid}<br>
+                    <strong>Celular:</strong> ${os.clientphone || 'N/A'}<br>
                     <strong>Descrição:</strong> ${os.description}<br>
                     <strong>Status:</strong> ${os.status}<br>
                     ${productsHtml}
                     ${discountInfo}<br>
                     <strong>Valor Total da OS:</strong> R$ ${totalVal.toFixed(2)}<br>
                     <strong>Total a Pagar:</strong> R$ ${totalDue.toFixed(2)}<br>
-                    <small>Criado por: ${os.createdBy || 'N/A'} em: ${new Date(os.createdAt).toLocaleString()}</small>
+                    <small>Criado por: ${os.createdby || 'N/A'} em: ${new Date(os.createdat).toLocaleString()}</small>
                 `;
 
                 const actionsDiv = document.createElement('div');

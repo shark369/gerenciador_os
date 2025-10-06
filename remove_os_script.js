@@ -35,11 +35,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         serviceOrders.forEach(os => {
             const li = document.createElement('li');
             li.innerHTML = `
-                <p><strong>ID da OS:</strong> ${os.osId}</p>
-                <p><strong>Cliente:</strong> ${os.clientName}</p>
+                <p><strong>ID da OS:</strong> ${os.osid}</p>
+                <p><strong>Cliente:</strong> ${os.clientname}</p>
                 <p><strong>Descrição:</strong> ${os.description}</p>
                 <p><strong>Status:</strong> ${os.status}</p>
-                <small>Criado em: ${new Date(os.createdAt).toLocaleString()}</small>
+                <small>Criado em: ${new Date(os.createdat).toLocaleString()}</small>
                 <button class="remove-btn" data-id="${os.id}">Remover</button>
                 <hr>
             `;
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const osId = event.target.dataset.id;
                 // Find the OS to get client name for confirmation
                 const osToRemove = serviceOrders.find(os => os.id == osId);
-                const clientName = osToRemove ? osToRemove.clientName : 'desconhecido';
+                const clientName = osToRemove ? osToRemove.clientname : 'desconhecido';
 
                 if (confirm(`Tem certeza que deseja remover a OS ${osId} do cliente ${clientName}?`)) {
                     try {
