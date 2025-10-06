@@ -215,12 +215,12 @@ app.get('/api/serviceOrders/:id', async (req, res) => {
 
 // POST a new service order
 app.post('/api/serviceOrders', async (req, res) => {
-    const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy } = req.body;
+    const { osid, clientname, clientphone, osdate, description, status, products, discount, totalvalue, totaldue, sector, createdby } = req.body;
     const productsJson = JSON.stringify(products); // Must stringify for pg driver
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
-    if (!clientName || !clientPhone) {
+    if (!clientname || !clientphone) {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
@@ -228,7 +228,7 @@ app.post('/api/serviceOrders', async (req, res) => {
         console.log('Iniciando a inserção de nova OS no banco de dados...');
         const result = await pool.query(
             'INSERT INTO service_orders (osId, clientName, clientPhone, osDate, description, status, products, discountType, discountValue, totalValue, totalDue, sector, createdBy) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
-            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, totalDue, sector, createdBy]
+            [osid, clientname, clientphone, osdate, description, status, productsJson, discountType, discountValue, totalvalue, totaldue, sector, createdby]
         );
         const newOsId = result.rows[0].id;
         
@@ -249,33 +249,33 @@ app.post('/api/serviceOrders', async (req, res) => {
 // PUT (update) an existing service order
 app.put('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
-    const { osId, clientName, clientPhone, osDate, description, status, products, discount, totalValue, totalDue, sector, createdBy, userRole } = req.body;
+    const { osid, clientname, clientphone, osdate, description, status, products, discount, totalvalue, totaldue, sector, createdby, userrole } = req.body;
     const productsJson = JSON.stringify(products); // Must stringify for pg driver
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
 
-    if (!clientName || !clientPhone) {
+    if (!clientname || !clientphone) {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
-    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [createdBy]);
+    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [createdby]);
     const editorRole = userResult.rows.length > 0 ? userResult.rows[0].role : '';
 
-    if ((createdBy === 'tarcio' || createdBy === 'safira') && editorRole === 'recepcao') {
+    if ((createdby === 'tarcio' || createdby === 'safira') && editorRole === 'recepcao') {
         if (Object.keys(req.body).length > 2 || !req.body.status) {
              return res.status(403).json({ message: 'Este usuário não tem permissão para editar a OS, apenas alterar o status.' });
         }
     }
 
-    let newTotalDue = totalDue;
-    if (status === 'Paga' && userRole === 'recepcao') {
+    let newTotalDue = totaldue;
+    if (status === 'Paga' && userrole === 'recepcao') {
         newTotalDue = 0;
     }
 
     try {
         const result = await pool.query(
             'UPDATE service_orders SET osId = $1, clientName = $2, clientPhone = $3, osDate = $4, description = $5, status = $6, products = $7, discountType = $8, discountValue = $9, totalValue = $10, totalDue = $11, sector = $12, createdBy = $13 WHERE id = $14',
-            [osId, clientName, clientPhone, osDate, description, status, productsJson, discountType, discountValue, totalValue, newTotalDue, sector, createdBy, id]
+            [osid, clientname, clientphone, osdate, description, status, productsJson, discountType, discountValue, totalvalue, newTotalDue, sector, createdby, id]
         );
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });

@@ -25,10 +25,10 @@ async function openPrintWindow() {
     });
 
     const newServiceOrder = {
-        osId,
-        clientName,
-        clientPhone,
-        osDate,
+        osid: osId,
+        clientname: clientName,
+        clientphone: clientPhone,
+        osdate: osDate,
         description,
         status,
         products,
@@ -36,11 +36,11 @@ async function openPrintWindow() {
             type: discountType,
             value: discountValue
         },
-        totalValue,
-        totalDue: parseFloat(totalDueInput.value),
+        totalvalue: totalValue,
+        totaldue: parseFloat(totalDueInput.value),
         sector: sectorSelect ? sectorSelect.value : null,
-        createdBy: loggedInUsername, // Send the username of the creator
-        createdAt: new Date().toISOString()
+        createdby: loggedInUsername, // Send the username of the creator
+        createdat: new Date().toISOString()
     };
 
     try {

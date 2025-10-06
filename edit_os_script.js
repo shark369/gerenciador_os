@@ -348,10 +348,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         const updatedOs = {
-            osId,
-            clientName,
-            clientPhone,
-            osDate,
+            osid: osId,
+            clientname: clientName,
+            clientphone: clientPhone,
+            osdate: osDate,
             description,
             status,
             products,
@@ -359,10 +359,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 type: discountType,
                 value: discountValue
             },
-            totalValue,
-            totalDue,
+            totalvalue: totalValue,
+            totaldue: totalDue,
             sector: document.getElementById('editSector').value, // Include sector
-            createdBy: editFormDiv.dataset.createdBy || loggedInUsername // Use existing or current user
+            createdby: editFormDiv.dataset.createdBy || loggedInUsername, // Use existing or current user
+            userrole: userRole // Pass user role for backend logic
         };
 
         try {
