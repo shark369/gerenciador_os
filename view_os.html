@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de OS STAMPEX</title>
     <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-        <div class="container">
+    <div class="container">
             <h2>Todas as Ordens de Serviço</h2>
             <a href="menu.html" class="back-to-menu-btn" id="backToMenuBtn">Voltar ao Menu</a>
             <div class="search-section" id="searchFilterSection">
@@ -27,7 +28,6 @@
                 <!-- Service orders will be displayed here -->
             </div>
         </div>
-    <script src="http://localhost:3001/socket.io/socket.io.js"></script>
     <script src="view_os_script.js"></script>
 </body>
 </html>
