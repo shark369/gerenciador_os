@@ -337,22 +337,33 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
     const { username } = req.body;
 
-    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [username]);
-    const deleterRole = userResult.rows.length > 0 ? userResult.rows[0].role : '';
-
-    if ((username === 'tarcio' || username === 'safira') && deleterRole === 'recepcao') {
-        return res.status(403).json({ message: 'Este usuário não tem permissão para remover Ordens de Serviço.' });
-    }
-
     try {
+        // First, check user permissions
+        const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [username]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(403).json({ message: 'Usuário não encontrado.' });
+        }
+        
+        const deleterRole = userResult.rows[0].role;
+
+        // Apply the security rule
+        if ((username === 'tarcio' || username === 'safira') && deleterRole === 'recepcao') {
+            return res.status(403).json({ message: 'Este usuário não tem permissão para remover Ordens de Serviço.' });
+        }
+
+        // If permission is granted, proceed to delete
         const result = await pool.query('DELETE FROM service_orders WHERE id = $1', [id]);
+        
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
+        
         res.json({ message: 'Ordem de serviço removida com sucesso!' });
+
     } catch (err) {
         console.error('Erro ao remover ordem de serviço:', err.stack);
-        res.status(500).json({ message: 'Erro ao remover ordem de serviço.' });
+        res.status(500).json({ message: 'Erro no servidor ao remover ordem de serviço.' });
     }
 });
 
