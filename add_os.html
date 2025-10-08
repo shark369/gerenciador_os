@@ -12,11 +12,21 @@
         <a href="menu.html" class="back-to-menu-btn">Voltar ao Menu</a>
         <form id="addOsForm">
             <div class="header-section">
-                <div class="input-group">
-                    <label for="clientName">Nome do Cliente:</label>
-                    <input type="text" id="clientName" name="clientName" required>
-                </div>
-                <div class="input-group">
+            <div class="input-group">
+                <label for="clientName">Nome do Cliente:</label>
+                <input type="text" id="clientName" name="clientName" required>
+            </div>
+            <div class="input-group checkbox-group">
+                <input type="checkbox" id="isConverterCheck">
+                <label for="isConverterCheck">Cliente é Revendedor?</label>
+            </div>
+            <div id="converterSelectorGroup" class="input-group" style="display: none;">
+                <label for="converterSelect">Selecione o Revendedor:</label>
+                <select id="converterSelect">
+                    <option value="">-- Selecione --</option>
+                </select>
+            </div>
+            <div class="input-group">
                     <label for="clientPhone">Celular:</label>
                     <input type="text" id="clientPhone" name="clientPhone" required>
                 </div>

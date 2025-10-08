@@ -312,11 +312,6 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
-    // Security check to prevent tarcio and safira from editing
-    if (createdby === 'tarcio' || createdby === 'safira') {
-        return res.status(403).json({ message: 'Este usuário não tem permissão para editar Ordens de Serviço.' });
-    }
-
     let newTotalDue = totaldue;
     if (status === 'Paga' && userrole === 'recepcao') {
         newTotalDue = 0;
@@ -358,6 +353,17 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
     } catch (err) {
         console.error('Erro ao remover ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao remover ordem de serviço.' });
+    }
+});
+
+// GET all active converters
+app.get('/api/converters', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, name, phone, email FROM converters WHERE active = true ORDER BY name ASC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar revendedores:', err.stack);
+        res.status(500).json({ message: 'Erro ao buscar revendedores.' });
     }
 });
 

@@ -68,7 +68,7 @@ async function openPrintWindow() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const addOsForm = document.getElementById('addOsForm');
     const productsContainer = document.getElementById('productsContainer');
     const addProductBtn = document.getElementById('addProductBtn');
@@ -76,7 +76,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const osIdInput = document.getElementById('osId');
     const osDateInput = document.getElementById('osDate');
     const statusSelect = document.getElementById('status');
-    const sectorInputGroup = document.getElementById('sectorInputGroup'); // New
+    const sectorInputGroup = document.getElementById('sectorInputGroup');
+    const isConverterCheck = document.getElementById('isConverterCheck');
+    const converterSelectorGroup = document.getElementById('converterSelectorGroup');
+    const converterSelect = document.getElementById('converterSelect');
+    const clientNameInput = document.getElementById('clientName');
+    const clientPhoneInput = document.getElementById('clientPhone');
+
+    let converters = [];
+
+    // Fetch converters from the API
+    async function fetchConverters() {
+        try {
+            const response = await fetch('/api/converters');
+            if (!response.ok) throw new Error('Failed to fetch converters');
+            converters = await response.json();
+            populateConverterSelect();
+        } catch (error) {
+            console.error('Error fetching converters:', error);
+        }
+    }
+
+    function populateConverterSelect() {
+        converterSelect.innerHTML = '<option value="">-- Selecione --</option>'; // Reset
+        converters.forEach(converter => {
+            const option = document.createElement('option');
+            option.value = converter.id;
+            option.textContent = converter.name;
+            converterSelect.appendChild(option);
+        });
+    }
+
+    // Event listener for the checkbox
+    isConverterCheck.addEventListener('change', () => {
+        if (isConverterCheck.checked) {
+            converterSelectorGroup.style.display = 'block';
+            clientNameInput.readOnly = true;
+            clientPhoneInput.readOnly = true;
+        } else {
+            converterSelectorGroup.style.display = 'none';
+            clientNameInput.readOnly = false;
+            clientPhoneInput.readOnly = false;
+            clientNameInput.value = '';
+            clientPhoneInput.value = '';
+            converterSelect.value = '';
+        }
+    });
+
+    // Event listener for the select dropdown
+    converterSelect.addEventListener('change', () => {
+        const selectedId = converterSelect.value;
+        if (selectedId) {
+            const selectedConverter = converters.find(c => c.id == selectedId);
+            if (selectedConverter) {
+                clientNameInput.value = selectedConverter.name;
+                clientPhoneInput.value = selectedConverter.phone;
+            }
+        } else {
+            clientNameInput.value = '';
+            clientPhoneInput.value = '';
+        }
+    });
 
     // Hide sector input if not recepcao
     const userRole = sessionStorage.getItem('userRole');
@@ -156,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add initial product field
     addProductField();
+
+    // Initial fetch of converters
+    await fetchConverters();
 
     addOsForm.addEventListener('submit', (event) => {
         event.preventDefault();

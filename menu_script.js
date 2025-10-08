@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addOsLink = document.getElementById('addOsLink');
     const removeOsLink = document.getElementById('removeOsLink');
     const editOsLink = document.getElementById('editOsLink');
-    const viewOsLink = document.getElementById('viewOsLink'); // Re-add this
+    const viewOsLink = document.getElementById('viewOsLink');
+    const addConverterLink = document.getElementById('addConverterLink');
 
     if (userRole) {
         if (userRole === 'recepcao') {
@@ -20,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (addOsLink) addOsLink.style.display = 'none';
             if (removeOsLink) removeOsLink.style.display = 'none';
             if (editOsLink) editOsLink.style.display = 'none';
-            if (viewOsLink) viewOsLink.style.display = 'block'; // Ensure view OS is visible for them
+            if (viewOsLink) viewOsLink.style.display = 'block';
+            if (addConverterLink) addConverterLink.style.display = 'none'; // Hide for non-recepcao
             // Logout button remains visible for grafica/impressao if they somehow reach menu.html
         }
     } else {
