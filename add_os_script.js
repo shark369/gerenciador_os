@@ -53,9 +53,11 @@ async function openPrintWindow() {
         });
 
         if (response.ok) {
+            const result = await response.json(); // Get the response from the server
             alert('Ordem de Serviço adicionada com sucesso!');
-            localStorage.setItem('osData', JSON.stringify(newServiceOrder));
-            window.open('print_os.html', '_blank');
+            
+            // Open the print window with the new OS ID as a URL parameter
+            window.open(`print_os.html?id=${result.id}`, '_blank');
             window.location.href = 'menu.html'; // Redirect to menu
         } else {
             alert('Erro ao adicionar Ordem de Serviço.');

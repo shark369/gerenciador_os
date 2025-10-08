@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logoutButton');
     const userRole = sessionStorage.getItem('userRole');
+    const username = sessionStorage.getItem('username'); // Get username
 
     const addOsLink = document.getElementById('addOsLink');
     const removeOsLink = document.getElementById('removeOsLink');
@@ -9,7 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (userRole) {
         if (userRole === 'recepcao') {
-            // All links visible by default for recepcao
+            // For recepcao, check specific usernames
+            if (username === 'tarcio' || username === 'safira') {
+                if (removeOsLink) removeOsLink.style.display = 'none';
+                if (editOsLink) editOsLink.style.display = 'none';
+            }
             if (logoutButton) logoutButton.style.display = 'block'; // Show logout for recepcao
         } else if (userRole === 'grafica' || userRole === 'impressao') {
             if (addOsLink) addOsLink.style.display = 'none';

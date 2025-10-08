@@ -99,6 +99,40 @@ pool.connect()
             `);
         })
         .then(() => {
+            console.log('Tabela service_orders verificada/criada com sucesso.');
+            // Create converters table
+            return client.query(`
+                CREATE TABLE IF NOT EXISTS converters (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    active BOOLEAN DEFAULT true,
+                    cep VARCHAR(10),
+                    address VARCHAR(255),
+                    number VARCHAR(20),
+                    complement VARCHAR(100),
+                    neighborhood VARCHAR(100),
+                    city VARCHAR(100),
+                    state VARCHAR(50),
+                    phone VARCHAR(20),
+                    email VARCHAR(255),
+                    createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+        })
+        .then(() => {
+            console.log('Tabela converters verificada/criada com sucesso.');
+            // Create users table
+            return client.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(255) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    role VARCHAR(50) NOT NULL,
+                    createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+        })
+        .then(() => {
             console.log('Tabela users verificada/criada com sucesso.');
             // Check if users table is empty
             return client.query('SELECT COUNT(*) as count FROM users');
@@ -200,13 +234,33 @@ app.get('/api/serviceOrders', async (req, res) => {
 // GET a single service order by ID
 app.get('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
+    const userRole = req.query.role; // Get user role from query parameter
+
     try {
         // Explicitly cast products to text
         const result = await pool.query('SELECT id, osId, clientName, clientPhone, osDate, description, status, products::text, discountType, discountValue, totalValue, totalDue, sector, createdBy, createdAt FROM service_orders WHERE id = $1', [id]);
+        
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Ordem de serviço não encontrada.' });
         }
-        res.json(result.rows[0]);
+
+        const serviceOrder = result.rows[0];
+
+        // Security Check: Verify user role has permission to view this OS
+        if (userRole === 'recepcao') {
+            // Reception can see all orders
+            return res.json(serviceOrder);
+        } else if (userRole === 'grafica' && serviceOrder.sector === 'Grafica') {
+            // 'grafica' role can only see orders for 'Grafica' sector
+            return res.json(serviceOrder);
+        } else if (userRole === 'impressao' && serviceOrder.sector === 'Impressao Digital') {
+            // 'impressao' role can only see orders for 'Impressao Digital' sector
+            return res.json(serviceOrder);
+        } else {
+            // If user does not have permission, act as if the order was not found
+            return res.status(404).json({ message: 'Ordem de serviço não encontrada ou acesso não permitido.' });
+        }
+
     } catch (err) {
         console.error('Erro ao buscar ordem de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar ordem de serviço.' });
@@ -258,13 +312,9 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
-    const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [createdby]);
-    const editorRole = userResult.rows.length > 0 ? userResult.rows[0].role : '';
-
-    if ((createdby === 'tarcio' || createdby === 'safira') && editorRole === 'recepcao') {
-        if (Object.keys(req.body).length > 2 || !req.body.status) {
-             return res.status(403).json({ message: 'Este usuário não tem permissão para editar a OS, apenas alterar o status.' });
-        }
+    // Security check to prevent tarcio and safira from editing
+    if (createdby === 'tarcio' || createdby === 'safira') {
+        return res.status(403).json({ message: 'Este usuário não tem permissão para editar Ordens de Serviço.' });
     }
 
     let newTotalDue = totaldue;
@@ -310,6 +360,27 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
         res.status(500).json({ message: 'Erro ao remover ordem de serviço.' });
     }
 });
+
+// POST a new converter
+app.post('/api/converters', async (req, res) => {
+    const { name, active, cep, address, number, complement, neighborhood, city, state, phone, email } = req.body;
+
+    if (!name || !phone || !email) {
+        return res.status(400).json({ message: 'Nome, Celular e Email são obrigatórios.' });
+    }
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO converters (name, active, cep, address, number, complement, neighborhood, city, state, phone, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id',
+            [name, active, cep, address, number, complement, neighborhood, city, state, phone, email]
+        );
+        res.status(201).json({ id: result.rows[0].id, message: 'Convertedor registrado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao registrar convertedor:', err.stack);
+        res.status(500).json({ message: 'Erro ao registrar convertedor.', error: err.message });
+    }
+});
+
 
 httpServer.listen(backendPort, () => {
     const url = `http://localhost:${backendPort}`;

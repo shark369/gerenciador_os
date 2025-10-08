@@ -88,13 +88,31 @@
             }
         });
 
-        function displayOSData() {
-            const osData = JSON.parse(localStorage.getItem('osData'));
+        async function displayOSData() {
             const clientContainer = document.querySelector('.osData-client');
             const productionContainer = document.querySelector('.osData-production');
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('id');
 
-            if (osData) {
-                const date = new Date(osData.osDate);
+            if (!osId) {
+                clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
+                return;
+            }
+
+            try {
+                const userRole = sessionStorage.getItem('userRole'); // Get role from session storage
+                const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
+                }
+                const osData = await response.json();
+
+                // The products from the server are a JSON string, so we need to parse it
+                if (typeof osData.products === 'string') {
+                    osData.products = JSON.parse(osData.products);
+                }
+                
+                const date = new Date(osData.osdate);
                 const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 
                 // --- Populate Client Copy (Full details, no image) ---
@@ -109,15 +127,15 @@
                         </tr>
                     `;
                 });
-                const discountText = osData.discount.type === 'percentage' ? `${osData.discount.value}%` : `R$ ${parseFloat(osData.discount.value).toFixed(2)}`;
+                const discountText = osData.discounttype === 'percentage' ? `${osData.discountvalue}%` : `R$ ${parseFloat(osData.discountvalue).toFixed(2)}`;
                 const clientHtml = `
                     <div class="os-details">
                         <div>
-                            <p><strong>Cliente:</strong> ${osData.clientName}</p>
+                            <p><strong>Cliente:</strong> ${osData.clientname}</p>
                             <p><strong>Descrição:</strong> ${osData.description || 'N/A'}</p>
                         </div>
                         <div>
-                            <p><strong>OS ID:</strong> ${osData.osId}</p>
+                            <p><strong>OS ID:</strong> ${osData.osid}</p>
                             <p><strong>Data:</strong> ${formattedDate}</p>
                             <p class="no-print"><strong>Status:</strong> ${osData.status}</p>
                         </div>
@@ -129,9 +147,9 @@
                         <tbody>${clientProductsHtml}</tbody>
                     </table>
                     <div class="summary">
-                        <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalValue).toFixed(2)}</p>
+                        <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalvalue).toFixed(2)}</p>
                         <p><strong>Desconto/Pgto:</strong> ${discountText}</p>
-                        <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totalDue).toFixed(2)}</p>
+                        <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totaldue).toFixed(2)}</p>
                     </div>`;
                 clientContainer.innerHTML = clientHtml;
 
@@ -148,8 +166,8 @@
                 const productionHtml = `
                      <div class="os-details">
                         <div>
-                            <p><strong>OS ID:</strong> ${osData.osId}</p>
-                            <p><strong>Cliente:</strong> ${osData.clientName}</p>
+                            <p><strong>OS ID:</strong> ${osData.osid}</p>
+                            <p><strong>Cliente:</strong> ${osData.clientname}</p>
                         </div>
                         <div>
                             <p><strong>Data:</strong> ${formattedDate}</p>
@@ -161,9 +179,9 @@
                     </table>`;
                 productionContainer.innerHTML = productionHtml;
 
-            } else {
-                clientContainer.innerHTML = '<p>Nenhum dado da OS encontrado.</p>';
-                productionContainer.innerHTML = '';
+            } catch (error) {
+                console.error('Erro ao buscar dados da OS:', error);
+                clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
             }
         }
 
