@@ -367,14 +367,29 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
     }
 });
 
-// GET all active converters
+// GET all converters (active and inactive)
 app.get('/api/converters', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name, phone, email FROM converters WHERE active = true ORDER BY name ASC');
+        const result = await pool.query('SELECT * FROM converters ORDER BY name ASC');
         res.json(result.rows);
     } catch (err) {
         console.error('Erro ao buscar revendedores:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar revendedores.' });
+    }
+});
+
+// GET a single converter by ID
+app.get('/api/converters/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM converters WHERE id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Revendedor não encontrado.' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Erro ao buscar revendedor:', err.stack);
+        res.status(500).json({ message: 'Erro ao buscar revendedor.' });
     }
 });
 
@@ -391,10 +406,49 @@ app.post('/api/converters', async (req, res) => {
             'INSERT INTO converters (name, active, cep, address, number, complement, neighborhood, city, state, phone, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id',
             [name, active, cep, address, number, complement, neighborhood, city, state, phone, email]
         );
-        res.status(201).json({ id: result.rows[0].id, message: 'Convertedor registrado com sucesso!' });
+        res.status(201).json({ id: result.rows[0].id, message: 'Revendedor registrado com sucesso!' });
     } catch (err) {
-        console.error('Erro ao registrar convertedor:', err.stack);
-        res.status(500).json({ message: 'Erro ao registrar convertedor.', error: err.message });
+        console.error('Erro ao registrar revendedor:', err.stack);
+        res.status(500).json({ message: 'Erro ao registrar revendedor.', error: err.message });
+    }
+});
+
+// PUT (update) an existing converter
+app.put('/api/converters/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, active, cep, address, number, complement, neighborhood, city, state, phone, email } = req.body;
+
+    if (!name || !phone || !email) {
+        return res.status(400).json({ message: 'Nome, Celular e Email são obrigatórios.' });
+    }
+
+    try {
+        const result = await pool.query(
+            'UPDATE converters SET name = $1, active = $2, cep = $3, address = $4, number = $5, complement = $6, neighborhood = $7, city = $8, state = $9, phone = $10, email = $11 WHERE id = $12',
+            [name, active, cep, address, number, complement, neighborhood, city, state, phone, email, id]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Revendedor não encontrado.' });
+        }
+        res.json({ message: 'Revendedor atualizado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao atualizar revendedor:', err.stack);
+        res.status(500).json({ message: 'Erro ao atualizar revendedor.', error: err.message });
+    }
+});
+
+// DELETE a converter
+app.delete('/api/converters/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('DELETE FROM converters WHERE id = $1', [id]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Revendedor não encontrado.' });
+        }
+        res.json({ message: 'Revendedor removido com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao remover revendedor:', err.stack);
+        res.status(500).json({ message: 'Erro ao remover revendedor.' });
     }
 });
 

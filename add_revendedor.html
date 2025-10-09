@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Revendedor - Gerenciador de OS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="menu.html" class="back-to-menu-btn">Voltar ao Menu</a>
+        <h2>Adicionar Novo Revendedor</h2>
+        <form id="addConverterForm">
+            <div class="input-group">
+                <label for="name">Nome do Revendedor:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="input-group">
+                <label for="phone">Celular:</label>
+                <input type="text" id="phone" name="phone" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" name="cep">
+            </div>
+            <div class="input-group">
+                <label for="address">Endereço:</label>
+                <input type="text" id="address" name="address">
+            </div>
+            <div class="input-group">
+                <label for="number">Número:</label>
+                <input type="text" id="number" name="number">
+            </div>
+            <div class="input-group">
+                <label for="complement">Complemento:</label>
+                <input type="text" id="complement" name="complement">
+            </div>
+            <div class="input-group">
+                <label for="neighborhood">Bairro:</label>
+                <input type="text" id="neighborhood" name="neighborhood">
+            </div>
+            <div class="input-group">
+                <label for="city">Cidade:</label>
+                <input type="text" id="city" name="city">
+            </div>
+            <div class="input-group">
+                <label for="state">Estado:</label>
+                <input type="text" id="state" name="state">
+            </div>
+            <div class="input-group">
+                <label for="active">Status:</label>
+                <select id="active" name="active">
+                    <option value="true" selected>Ativo</option>
+                    <option value="false">Inativo</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="saveConverterBtn">Salvar Revendedor</button>
+            </div>
+        </form>
+    </div>
+    <script src="add_revendedor_script.js"></script>
+</body>
+</html>

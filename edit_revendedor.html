@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Revendedor - Gerenciador de OS</title>
+    <title>Editar Revendedor - Gerenciador de OS</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <a href="menu.html" class="back-to-menu-btn">Voltar ao Menu</a>
-        <h2>Adicionar Novo Revendedor</h2>
-        <form id="addConverterForm">
+        <a href="view_revendedores.html" class="back-to-menu-btn">Voltar para a Lista</a>
+        <h2>Editar Revendedor</h2>
+        <form id="editConverterForm">
             <div class="input-group">
                 <label for="name">Nome do Revendedor:</label>
                 <input type="text" id="name" name="name" required>
@@ -54,15 +54,15 @@
             <div class="input-group">
                 <label for="active">Status:</label>
                 <select id="active" name="active">
-                    <option value="true" selected>Ativo</option>
+                    <option value="true">Ativo</option>
                     <option value="false">Inativo</option>
                 </select>
             </div>
             <div class="form-actions">
-                <button type="submit" id="saveConverterBtn">Salvar Revendedor</button>
+                <button type="submit" id="saveConverterBtn">Salvar Alterações</button>
             </div>
         </form>
     </div>
-    <script src="add_converter_script.js"></script>
+    <script src="edit_revendedor_script.js"></script>
 </body>
 </html>
