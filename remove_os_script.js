@@ -57,8 +57,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (confirm(`Tem certeza que deseja remover a OS ${osId} do cliente ${clientName}?`)) {
                     try {
+                        const username = localStorage.getItem('username');
+                        if (!username) {
+                            alert('Usuário não logado. Faça o login novamente.');
+                            window.location.href = 'index.html';
+                            return;
+                        }
+
                         const response = await fetch(`/api/serviceOrders/${osId}`, {
-                            method: 'DELETE'
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username })
                         });
 
                         if (response.ok) {
