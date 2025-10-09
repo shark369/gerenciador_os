@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (confirm(`Tem certeza que deseja remover a OS ${osId} do cliente ${clientName}?`)) {
                     try {
-                        const username = localStorage.getItem('username');
+                        const username = sessionStorage.getItem('username');
                         if (!username) {
                             alert('Usuário não logado. Faça o login novamente.');
                             window.location.href = 'index.html';
