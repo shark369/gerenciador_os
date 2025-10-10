@@ -13,8 +13,8 @@
         <div id="client-copy" style="display: none;">
             <div class="print-container">
                 <div class="print-header">
-                    <h2>Ordem de Serviço - Via do Cliente</h2>
-                    <p>STAMPEX COMUNICAÇÃO VISUAL</p>
+                    <h2>Ordem de Serviço - STAMPEX COMUNICAÇÃO VISUAL</h2>
+                    <p>((81) 99741-8664)</p>
                 </div>
                 <div class="osData-client">
                     <!-- Client data will be populated by script -->
@@ -91,98 +91,114 @@
         async function displayOSData() {
             const clientContainer = document.querySelector('.osData-client');
             const productionContainer = document.querySelector('.osData-production');
-            const params = new URLSearchParams(window.location.search);
-            const osId = params.get('id');
+            const storedOsData = localStorage.getItem('osData');
 
-            if (!osId) {
-                clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
-                return;
-            }
+            if (storedOsData) {
+                const osData = JSON.parse(storedOsData);
+                localStorage.removeItem('osData'); // Clean up after use
+                populatePrintData(osData);
+            } else {
+                const params = new URLSearchParams(window.location.search);
+                const osId = params.get('id');
 
-            try {
-                const userRole = sessionStorage.getItem('userRole'); // Get role from session storage
-                const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
+                if (!osId) {
+                    clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
+                    return;
                 }
-                const osData = await response.json();
 
-                // The products from the server are a JSON string, so we need to parse it
-                if (typeof osData.products === 'string') {
-                    osData.products = JSON.parse(osData.products);
+                try {
+                    const userRole = sessionStorage.getItem('userRole');
+                    const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
+                    if (!response.ok) {
+                        throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
+                    }
+                    const osDataFromServer = await response.json();
+                    
+                    // The products from the server might be a JSON string
+                    if (typeof osDataFromServer.products === 'string') {
+                        osDataFromServer.products = JSON.parse(osDataFromServer.products);
+                    }
+                    populatePrintData(osDataFromServer);
+                } catch (error) {
+                    console.error('Erro ao buscar dados da OS:', error);
+                    clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
                 }
-                
-                const date = new Date(osData.osdate);
-                const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-
-                // --- Populate Client Copy (Full details, no image) ---
-                let clientProductsHtml = '';
-                osData.products.forEach(product => {
-                    clientProductsHtml += `
-                        <tr>
-                            <td>${product.name}</td>
-                            <td class="td-quantity">${product.quantity}</td>
-                            <td>R$ ${parseFloat(product.value).toFixed(2)}</td>
-                            <td>R$ ${(product.quantity * product.value).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-                const discountText = osData.discounttype === 'percentage' ? `${osData.discountvalue}%` : `R$ ${parseFloat(osData.discountvalue).toFixed(2)}`;
-                const clientHtml = `
-                    <div class="os-details">
-                        <div>
-                            <p><strong>Cliente:</strong> ${osData.clientname}</p>
-                            <p><strong>Descrição:</strong> ${osData.description || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <p><strong>OS ID:</strong> ${osData.osid}</p>
-                            <p><strong>Data:</strong> ${formattedDate}</p>
-                            <p class="no-print"><strong>Status:</strong> ${osData.status}</p>
-                        </div>
-                    </div>
-                    <table class="products-table">
-                        <thead>
-                            <tr><th>Produto</th><th>Quantidade</th><th>Valor Unit.</th><th>Valor Total</th></tr>
-                        </thead>
-                        <tbody>${clientProductsHtml}</tbody>
-                    </table>
-                    <div class="summary">
-                        <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalvalue).toFixed(2)}</p>
-                        <p><strong>Desconto/Pgto:</strong> ${discountText}</p>
-                        <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totaldue).toFixed(2)}</p>
-                    </div>`;
-                clientContainer.innerHTML = clientHtml;
-
-                // --- Populate Production Copy (Products, quantities, and date) ---
-                let productionProductsHtml = '';
-                osData.products.forEach(product => {
-                    productionProductsHtml += `
-                        <tr>
-                            <td>${product.name}</td>
-                            <td class="td-quantity">${product.quantity}</td>
-                        </tr>
-                    `;
-                });
-                const productionHtml = `
-                     <div class="os-details">
-                        <div>
-                            <p><strong>OS ID:</strong> ${osData.osid}</p>
-                            <p><strong>Cliente:</strong> ${osData.clientname}</p>
-                        </div>
-                        <div>
-                            <p><strong>Data:</strong> ${formattedDate}</p>
-                        </div>
-                    </div>
-                    <table class="products-table">
-                        <thead><tr><th>Produto</th><th>Quantidade</th></tr></thead>
-                        <tbody>${productionProductsHtml}</tbody>
-                    </table>`;
-                productionContainer.innerHTML = productionHtml;
-
-            } catch (error) {
-                console.error('Erro ao buscar dados da OS:', error);
-                clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
             }
+        }
+
+        function populatePrintData(osData) {
+            const clientContainer = document.querySelector('.osData-client');
+            const productionContainer = document.querySelector('.osData-production');
+            
+            const date = new Date(osData.osdate || osData.osDate); // Handle both date formats
+            const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+
+            // --- Populate Client Copy ---
+            let clientProductsHtml = '';
+            osData.products.forEach(product => {
+                clientProductsHtml += `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td class="td-quantity">${product.quantity}</td>
+                        <td>R$ ${parseFloat(product.value).toFixed(2)}</td>
+                        <td>R$ ${(product.quantity * product.value).toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            const discountValue = osData.discount ? osData.discount.value : (osData.discountvalue || 0);
+            const discountType = osData.discount ? osData.discount.type : (osData.discounttype || 'percentage');
+            const discountText = discountType === 'percentage' ? `${discountValue}%` : `R$ ${parseFloat(discountValue).toFixed(2)}`;
+            
+            const clientHtml = `
+                <div class="os-details">
+                    <div>
+                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName}</p>
+                        <p><strong>Descrição:</strong> ${osData.description || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId}</p>
+                        <p><strong>Data:</strong> ${formattedDate}</p>
+                        <p class="no-print"><strong>Status:</strong> ${osData.status}</p>
+                    </div>
+                </div>
+                <table class="products-table">
+                    <thead>
+                        <tr><th>Produto</th><th>Quantidade</th><th>Valor Unit.</th><th>Valor Total</th></tr>
+                    </thead>
+                    <tbody>${clientProductsHtml}</tbody>
+                </table>
+                <div class="summary">
+                    <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalvalue || osData.totalValue).toFixed(2)}</p>
+                    <p><strong>Desconto/Pgto:</strong> ${discountText}</p>
+                    <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totaldue || osData.totalDue).toFixed(2)}</p>
+                </div>`;
+            clientContainer.innerHTML = clientHtml;
+
+            // --- Populate Production Copy ---
+            let productionProductsHtml = '';
+            osData.products.forEach(product => {
+                productionProductsHtml += `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td class="td-quantity">${product.quantity}</td>
+                    </tr>
+                `;
+            });
+            const productionHtml = `
+                 <div class="os-details">
+                    <div>
+                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId}</p>
+                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName}</p>
+                    </div>
+                    <div>
+                        <p><strong>Data:</strong> ${formattedDate}</p>
+                    </div>
+                </div>
+                <table class="products-table">
+                    <thead><tr><th>Produto</th><th>Quantidade</th></tr></thead>
+                    <tbody>${productionProductsHtml}</tbody>
+                </table>`;
+            productionContainer.innerHTML = productionHtml;
         }
 
         function printOS() {
