@@ -129,36 +129,54 @@
         function populatePrintData(osData) {
             const clientContainer = document.querySelector('.osData-client');
             const productionContainer = document.querySelector('.osData-production');
-            
-            const date Danew Datete(osData.osdate || osData.osDatboth Hendlrbohteforms
-            const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+
+            // Robust date handling
+            const dateValue = osData.osdate || osData.osDate;
+            let formattedDate = 'N/A';
+            if (dateValue) {
+                // Handle YYYY-MM-DD format by adding time to avoid timezone issues
+                const date = new Date(dateValue + 'T00:00:00');
+                if (!isNaN(date.getTime())) {
+                    formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+                }
+            }
+
+            const products = Array.isArray(osData.products) ? osData.products : [];
 
             // --- Populate Client Copy ---
             let clientProductsHtml = '';
-            osData.products.forEach(product => {
+            products.forEach(product => {
+                const name = product.name || 'N/A';
+                const quantity = parseFloat(product.quantity) || 0;
+                const value = parseFloat(product.value) || 0;
+                const total = quantity * value;
                 clientProductsHtml += `
                     <tr>
-                        <td>${product.name}</td>
-                        <td class="td-quantity">${product.quantity}</td>
-                        <td>R$ ${parseFloat(product.value).toFixed(2)}</td>
-                        <td>R$ ${(product.quantity * product.value).toFixed(2)}</td>
+                        <td>${name}</td>
+                        <td class="td-quantity">${quantity}</td>
+                        <td>R$ ${value.toFixed(2)}</td>
+                        <td>R$ ${total.toFixed(2)}</td>
                     </tr>
                 `;
             });
-            const discountValue = osData.discount ? osData.discount.value : (osData.discountvalue || 0);
+
+            const discountValue = parseFloat(osData.discount ? osData.discount.value : (osData.discountvalue || 0));
             const discountType = osData.discount ? osData.discount.type : (osData.discounttype || 'percentage');
-            const discountText = discountType === 'percentage' ? `${discountValue}%` : `R$ ${parseFloat(discountValue).toFixed(2)}`;
+            const discountText = discountType === 'percentage' ? `${discountValue}%` : `R$ ${discountValue.toFixed(2)}`;
             
+            const totalValue = parseFloat(osData.totalvalue || osData.totalValue) || 0;
+            const totalDue = parseFloat(osData.totaldue || osData.totalDue) || 0;
+
             const clientHtml = `
                 <div class="os-details">
                     <div>
-                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName}</p>
+                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName || 'N/A'}</p>
                         <p><strong>Descrição:</strong> ${osData.description || 'N/A'}</p>
                     </div>
                     <div>
-                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId}</p>
+                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId || 'N/A'}</p>
                         <p><strong>Data:</strong> ${formattedDate}</p>
-                        <p class="no-print"><strong>Status:</strong> ${osData.status}</p>
+                        <p class="no-print"><strong>Status:</strong> ${osData.status || 'N/A'}</p>
                     </div>
                 </div>
                 <table class="products-table">
@@ -168,27 +186,29 @@
                     <tbody>${clientProductsHtml}</tbody>
                 </table>
                 <div class="summary">
-                    <p><strong>Subtotal:</strong> R$ ${parseFloat(osData.totalvalue || osData.totalValue).toFixed(2)}</p>
+                    <p><strong>Subtotal:</strong> R$ ${totalValue.toFixed(2)}</p>
                     <p><strong>Desconto/Pgto:</strong> ${discountText}</p>
-                    <p class="total"><strong>Total a Pagar:</strong> R$ ${parseFloat(osData.totaldue || osData.totalDue).toFixed(2)}</p>
+                    <p class="total"><strong>Total a Pagar:</strong> R$ ${totalDue.toFixed(2)}</p>
                 </div>`;
             clientContainer.innerHTML = clientHtml;
 
             // --- Populate Production Copy ---
             let productionProductsHtml = '';
-            osData.products.forEach(product => {
+            products.forEach(product => {
+                const name = product.name || 'N/A';
+                const quantity = parseFloat(product.quantity) || 0;
                 productionProductsHtml += `
                     <tr>
-                        <td>${product.name}</td>
-                        <td class="td-quantity">${product.quantity}</td>
+                        <td>${name}</td>
+                        <td class="td-quantity">${quantity}</td>
                     </tr>
                 `;
             });
             const productionHtml = `
                  <div class="os-details">
                     <div>
-                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId}</p>
-                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName}</p>
+                        <p><strong>OS ID:</strong> ${osData.osid || osData.osId || 'N/A'}</p>
+                        <p><strong>Cliente:</strong> ${osData.clientname || osData.clientName || 'N/A'}</p>
                     </div>
                     <div>
                         <p><strong>Data:</strong> ${formattedDate}</p>
