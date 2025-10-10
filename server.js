@@ -397,8 +397,8 @@ app.get('/api/converters/:id', async (req, res) => {
 app.post('/api/converters', async (req, res) => {
     const { name, active, cep, address, number, complement, neighborhood, city, state, phone, email } = req.body;
 
-    if (!name || !phone || !email) {
-        return res.status(400).json({ message: 'Nome, Celular e Email são obrigatórios.' });
+    if (!name || !phone || !city) {
+        return res.status(400).json({ message: 'Nome, Celular e Cidade são obrigatórios.' });
     }
 
     try {

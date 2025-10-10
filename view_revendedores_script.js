@@ -19,20 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = ''; // Limpa a tabela antes de preencher
 
         if (revendedores.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5">Nenhum revendedor encontrado.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="4">Nenhum revendedor encontrado.</td></tr>';
             return;
         }
 
         revendedores.forEach(revendedor => {
             const row = document.createElement('tr');
 
-            const status = revendedor.active ? 'Ativo' : 'Inativo';
-
             row.innerHTML = `
                 <td>${revendedor.name}</td>
                 <td>${revendedor.phone}</td>
-                <td>${revendedor.email}</td>
-                <td>${status}</td>
+                <td>${revendedor.city}</td>
                 <td class="actions">
                     <button class="edit-btn" data-id="${revendedor.id}">Editar</button>
                     <button class="remove-btn" data-id="${revendedor.id}">Remover</button>
