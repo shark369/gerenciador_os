@@ -291,10 +291,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        let osDateForPrint = document.getElementById('editOsDate').value;
+        if (!osDateForPrint) {
+            const today = new Date();
+            osDateForPrint = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+
         const osDataForPrint = {
             osId: document.getElementById('editOsId').value,
             clientName: document.getElementById('editClientName').value,
-            osDate: document.getElementById('editOsDate').value,
+            osDate: osDateForPrint,
             description: document.getElementById('editDescription').value,
             status: document.getElementById('editStatus').value,
             products: products,
