@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         sectorInputGroup.style.display = 'none';
     }
 
-    // Generate a simple unique ID for OS (for demonstration purposes)
-    osIdInput.value = 'OS-' + Date.now();
+    // Generate a more unique ID for OS to prevent collisions
+    osIdInput.value = 'OS-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
     // Set current date
     osDateInput.valueAsDate = new Date();
 
