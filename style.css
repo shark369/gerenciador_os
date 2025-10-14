@@ -499,10 +499,33 @@ button[type="submit"]:hover {
     .print-container {
         width: 100%;
         margin: 0;
-        padding: 15px;
+        padding: 10px; /* Reduced padding */
         border: none;
         box-shadow: none;
-        font-size: 14px;
+        font-size: 12px; /* Reduced base font size */
+        line-height: 1.2; /* Tighter line height */
+    }
+    .print-header h2 {
+        font-size: 20px; /* Reduced header font size */
+        margin-bottom: 5px;
+    }
+    .os-details {
+        font-size: 11px; /* Reduced details font size */
+        margin-bottom: 10px;
+    }
+    .products-table th, .products-table td {
+        padding: 4px; /* Reduced cell padding */
+        font-size: 10px; /* Reduced table font size */
+    }
+    .summary p {
+        font-size: 12px; /* Reduced summary font size */
+        margin: 2px 0;
+    }
+    .summary .total {
+        font-size: 14px; /* Reduced total font size */
+    }
+    #image-box {
+        min-height: 100px; /* Reduced image box height */
     }
     /* Default state: only production copy is visible and takes full width */
     #production-copy {
@@ -541,16 +564,16 @@ button[type="submit"]:hover {
         text-align: left; /* Align summary to the left */
     }
     .products-table th, .products-table td {
-        padding: 8px;
+        padding: 4px;
     }
     .print-header h2 {
-        font-size: 26px;
+        font-size: 22px;
     }
     .print-header {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     .os-details {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     .no-print {
         display: none !important;
