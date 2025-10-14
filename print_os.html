@@ -132,13 +132,18 @@
 
             // Robust date handling
             const dateValue = osData.osdate || osData.osDate;
-            let formattedDate = 'N/A';
+            let formattedDate;
             if (dateValue) {
                 // Handle YYYY-MM-DD format by adding time to avoid timezone issues
                 const date = new Date(dateValue + 'T00:00:00');
                 if (!isNaN(date.getTime())) {
                     formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
                 }
+            }
+            
+            if (!formattedDate || formattedDate === 'N/A') {
+                // Fallback to current date if OS date is not available
+                formattedDate = new Date().toLocaleDateString('pt-BR');
             }
 
             const products = Array.isArray(osData.products) ? osData.products : [];
