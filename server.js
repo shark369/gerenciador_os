@@ -418,7 +418,7 @@ app.put('/api/converters/:id', async (req, res) => {
     const { id } = req.params;
     const { name, active, cep, address, number, complement, neighborhood, city, state, phone, email } = req.body;
 
-    if (!name || !phone || !email) {
+    if (!name || !phone || !city) {
         return res.status(400).json({ message: 'Nome, Celular e Email são obrigatórios.' });
     }
 

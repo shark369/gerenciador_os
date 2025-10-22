@@ -1,20 +1,3 @@
-# Dependencies
-/node_modules
-
-# Logs
-log.txt
-log-test.txt
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Local env files
+node_modules
 .env
-
-# Build output
-/dist
-/build
-
-# Executables
-*.exe
-*.bat
+backup.dump

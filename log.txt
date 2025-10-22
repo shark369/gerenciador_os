@@ -1,0 +1,30 @@
+2025-10-16T17:54:36.234Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-16T17:54:36.244Z: Backend server rodando em http://localhost:3001
+2025-10-16T17:54:36.244Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-16T17:54:36.285Z: ERRO CRÍTICO AO CONECTAR AO BANCO DE DADOS: error: autentica��o do tipo senha falhou para o usu�rio "postgres"
+    at C:\Users\teste123\Desktop\gerenciador_os\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-10-16T18:00:09.671Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-16T18:00:09.681Z: Backend server rodando em http://localhost:3001
+2025-10-16T18:00:09.681Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-16T18:00:09.723Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-16T18:00:09.730Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-16T18:00:09.730Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-16T18:00:09.731Z: Tabela converters verificada/criada com sucesso.
+2025-10-16T18:00:09.731Z: Tabela users verificada/criada com sucesso.
+2025-10-16T18:07:54.828Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-16T18:07:54.839Z: Backend server rodando em http://localhost:3001
+2025-10-16T18:07:54.839Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-16T18:07:54.882Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-16T18:07:54.886Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-16T18:07:54.886Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-16T18:07:54.887Z: Tabela converters verificada/criada com sucesso.
+2025-10-16T18:07:54.887Z: Tabela users verificada/criada com sucesso.
+2025-10-22T16:34:21.506Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-22T16:34:21.517Z: Backend server rodando em http://localhost:3001
+2025-10-22T16:34:21.518Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-22T16:34:21.636Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-22T16:34:21.652Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-22T16:34:21.653Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-22T16:34:21.654Z: Tabela converters verificada/criada com sucesso.
+2025-10-22T16:34:21.654Z: Tabela users verificada/criada com sucesso.
