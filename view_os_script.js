@@ -83,7 +83,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (userRole === 'grafica' || userRole === 'impressao') { // Corrected typo: 'grafao' to 'grafica'
                 return matchesSearch; // Status is already filtered by backend
             } else {
-                return matchesSearch && matchesStatus;
+                const isEntregue = os.status === 'Entregue';
+                return matchesSearch && matchesStatus && !isEntregue;
             }
         });
         
@@ -168,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const statusSelect = document.createElement('select');
                     statusSelect.classList.add('status-select');
                     statusSelect.dataset.id = os.id;
-                    ['Pendente', 'Concluída', 'Paga'].forEach(status => {
+                    ['Pendente', 'Paga'].forEach(status => {
                         const option = document.createElement('option');
                         option.value = status;
                         option.textContent = status;
@@ -176,16 +177,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         statusSelect.appendChild(option);
                     });
                     actionsDiv.appendChild(statusSelect);
+
+                    if (os.status === 'Paga') {
+                        const entregueButton = document.createElement('button');
+                        entregueButton.textContent = 'Marcar como Entregue';
+                        entregueButton.classList.add('update-status-btn', 'entregue-btn');
+                        entregueButton.dataset.id = os.id;
+                        entregueButton.dataset.newstatus = 'Entregue';
+                        actionsDiv.appendChild(entregueButton);
+                    }
                 }
 
                 // --- Actions for Grafica/Impressao ---
                 if ((userRole === 'grafica' || userRole === 'impressao') && os.status === 'Pendente') {
-                    const completeButton = document.createElement('button');
-                    completeButton.textContent = 'Marcar como Concluído';
-                    completeButton.classList.add('update-status-btn');
-                    completeButton.dataset.id = os.id;
-                    completeButton.dataset.newstatus = 'Concluída';
-                    actionsDiv.appendChild(completeButton);
+                    
                 }
                 
                 li.appendChild(actionsDiv);

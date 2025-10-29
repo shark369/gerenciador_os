@@ -209,14 +209,14 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/serviceOrders', async (req, res) => {
     const userRole = req.query.role;
     // Explicitly cast products to text to avoid issues with JSONB type in pg driver
-    let query = 'SELECT id, osId, clientName, clientPhone, osDate, description, status, products::text, discountType, discountValue, totalValue, totalDue, sector, createdBy, createdAt FROM service_orders';
-    const params = [];
+    let query = 'SELECT id, osId, clientName, clientPhone, osDate, description, status, products::text, discountType, discountValue, totalValue, totalDue, sector, createdBy, createdAt FROM service_orders WHERE status != $1';
+    const params = ['Entregue'];
 
     if (userRole === 'grafica') {
-        query += ' WHERE sector = $1 AND status = $2';
+        query += ' AND sector = $2 AND status = $3';
         params.push('Grafica', 'Pendente');
     } else if (userRole === 'impressao') {
-        query += ' WHERE sector = $1 AND status = $2';
+        query += ' AND sector = $2 AND status = $3';
         params.push('Impressao Digital', 'Pendente');
     }
 

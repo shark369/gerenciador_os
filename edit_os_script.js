@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <label for="editStatus">Status:</label>
                 <select id="editStatus" name="editStatus">
                     <option value="Pendente">Pendente</option>
-                    <option value="Concluída">Concluída</option>
                     <option value="Paga">Paga</option>
                 </select>
             </div>
@@ -193,8 +192,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function displayServiceOrders(serviceOrders) {
         osListDiv.innerHTML = ''; // Clear previous list
         
-        // Filter out service orders with status "Paga"
-        const editableServiceOrders = serviceOrders.filter(os => os.status !== 'Paga');
+        // Filter out service orders with status "Paga" or "Entregue"
+        const editableServiceOrders = serviceOrders.filter(os => os.status !== 'Paga' && os.status !== 'Entregue');
 
         if (editableServiceOrders.length === 0) {
             osListDiv.innerHTML = '<p>Nenhuma Ordem de Serviço pendente ou em andamento encontrada para editar.</p>';

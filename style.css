@@ -237,6 +237,7 @@ body > .container:nth-child(2) { /* Target the second container in view_os.html 
     flex-direction: column;
     justify-content: space-between; /* Push button to bottom */
     height: auto; /* Allow height to adjust */
+    position: relative;
 }
 
 .client-group li hr {
@@ -575,7 +576,19 @@ button[type="submit"]:hover {
     .os-details {
         margin-bottom: 10px;
     }
-    .no-print {
+.no-print {
         display: none !important;
     }
+}
+
+.entregue-btn {
+    position: absolute;
+    bottom: 45px;
+    right: 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
 }

@@ -28,3 +28,51 @@
 2025-10-22T16:34:21.653Z: Tabela service_orders verificada/criada com sucesso.
 2025-10-22T16:34:21.654Z: Tabela converters verificada/criada com sucesso.
 2025-10-22T16:34:21.654Z: Tabela users verificada/criada com sucesso.
+2025-10-28T16:52:58.842Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T16:52:58.852Z: Backend server rodando em http://localhost:3001
+2025-10-28T16:52:58.852Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T16:52:59.022Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T16:52:59.037Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T16:52:59.038Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T16:52:59.039Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T16:52:59.039Z: Tabela users verificada/criada com sucesso.
+2025-10-28T17:03:48.821Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T17:03:48.834Z: Backend server rodando em http://localhost:3001
+2025-10-28T17:03:48.834Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T17:03:48.886Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T17:03:48.890Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:03:48.891Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:03:48.891Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T17:03:48.892Z: Tabela users verificada/criada com sucesso.
+2025-10-28T17:04:12.309Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T17:04:12.324Z: Backend server rodando em http://localhost:3001
+2025-10-28T17:04:12.329Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T17:04:12.425Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T17:04:12.429Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:04:12.430Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:04:12.431Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T17:04:12.433Z: Tabela users verificada/criada com sucesso.
+2025-10-28T17:05:14.444Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T17:05:14.458Z: Backend server rodando em http://localhost:3001
+2025-10-28T17:05:14.458Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T17:05:14.510Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T17:05:14.513Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:05:14.514Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:05:14.515Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T17:05:14.515Z: Tabela users verificada/criada com sucesso.
+2025-10-28T17:11:12.435Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T17:11:12.450Z: Backend server rodando em http://localhost:3001
+2025-10-28T17:11:12.450Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T17:11:12.500Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T17:11:12.504Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:11:12.505Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T17:11:12.506Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T17:11:12.507Z: Tabela users verificada/criada com sucesso.
+2025-10-28T20:10:14.020Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-10-28T20:10:14.031Z: Backend server rodando em http://localhost:3001
+2025-10-28T20:10:14.032Z: Funcionalidade de abrir navegador desativada para teste.
+2025-10-28T20:10:14.181Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-10-28T20:10:14.185Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T20:10:14.185Z: Tabela service_orders verificada/criada com sucesso.
+2025-10-28T20:10:14.186Z: Tabela converters verificada/criada com sucesso.
+2025-10-28T20:10:14.186Z: Tabela users verificada/criada com sucesso.
