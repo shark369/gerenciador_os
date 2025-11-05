@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     // Store createdBy for later use in update
                     editFormDiv.dataset.createdBy = osToEdit.createdby || '';
+                    editFormDiv.dataset.createdAt = osToEdit.createdat; // Store createdAt timestamp
 
                     calculateEditTotal(); // Calculate initial total for edit form
 
@@ -300,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             osId: document.getElementById('editOsId').value,
             clientName: document.getElementById('editClientName').value,
             osDate: osDateForPrint,
+            createdAt: editFormDiv.dataset.createdAt, // Pass the correct timestamp
             description: document.getElementById('editDescription').value,
             status: document.getElementById('editStatus').value,
             products: products,

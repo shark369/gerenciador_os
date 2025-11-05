@@ -130,19 +130,32 @@
             const productionContainer = document.querySelector('.osData-production');
 
             // Robust date handling
-            const dateValue = osData.osdate || osData.osDate;
+            const dateValue = osData.createdAt || osData.osdate || osData.osDate;
             let formattedDate;
             if (dateValue) {
-                // Handle YYYY-MM-DD format by adding time to avoid timezone issues
-                const date = new Date(dateValue + 'T00:00:00');
+                const date = new Date(dateValue);
                 if (!isNaN(date.getTime())) {
-                    formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+                    // The browser's `new Date()` automatically converts the UTC timestamp from the server to the local timezone.
+                    // We just need to format it correctly.
+                    const dd = String(date.getDate()).padStart(2, '0');
+                    const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+                    const yyyy = date.getFullYear();
+                    const hh = String(date.getHours()).padStart(2, '0');
+                    const min = String(date.getMinutes()).padStart(2, '0');
+
+                    formattedDate = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
                 }
             }
             
             if (!formattedDate || formattedDate === 'N/A') {
                 // Fallback to current date if OS date is not available
-                formattedDate = new Date().toLocaleDateString('pt-BR');
+                formattedDate = new Date().toLocaleString('pt-BR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             }
 
             const products = Array.isArray(osData.products) ? osData.products : [];

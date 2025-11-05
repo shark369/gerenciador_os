@@ -39,8 +39,7 @@ async function openPrintWindow() {
         totalvalue: totalValue,
         totaldue: parseFloat(totalDueInput.value),
         sector: sectorSelect ? sectorSelect.value : null,
-        createdby: loggedInUsername, // Send the username of the creator
-        createdat: new Date().toISOString()
+        createdby: loggedInUsername // Send the username of the creator
     };
 
     try {
@@ -56,8 +55,13 @@ async function openPrintWindow() {
             const result = await response.json(); // Get the response from the server
             alert('Ordem de Serviço adicionada com sucesso!');
             
-            // Open the print window with the new OS ID as a URL parameter
-            window.open(`print_os.html?id=${result.id}`, '_blank');
+            // Fetch the full OS data to get the createdAt timestamp from the server
+            const newOsResponse = await fetch(`/api/serviceOrders/${result.id}`);
+            const newOsData = await newOsResponse.json();
+
+            // Use localStorage to pass data to the print window
+            localStorage.setItem('osData', JSON.stringify(newOsData));
+            window.open('print_os.html', '_blank');
             window.location.href = 'menu.html'; // Redirect to menu
         } else {
             alert('Erro ao adicionar Ordem de Serviço.');
