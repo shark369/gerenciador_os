@@ -72,7 +72,7 @@ pool.connect()
                 osId VARCHAR(255) UNIQUE NOT NULL,
                 clientName VARCHAR(255) NOT NULL,
                 clientPhone VARCHAR(20),
-                osDate TIMESTAMPTZ NOT NULL,
+                osDate DATE NOT NULL,
                 description TEXT,
                 status VARCHAR(50) NOT NULL,
                 products JSON,

@@ -39,7 +39,8 @@ async function openPrintWindow() {
         totalvalue: totalValue,
         totaldue: parseFloat(totalDueInput.value),
         sector: sectorSelect ? sectorSelect.value : null,
-        createdby: loggedInUsername // Send the username of the creator
+        createdby: loggedInUsername, // Send the username of the creator
+        createdat: new Date().toISOString()
     };
 
     try {
@@ -55,8 +56,9 @@ async function openPrintWindow() {
             const result = await response.json(); // Get the response from the server
             alert('Ordem de Serviço adicionada com sucesso!');
             
-            // Redirect to the print page with the new OS ID
-            window.location.href = `print_os.html?id=${result.id}`;
+            // Open the print window with the new OS ID as a URL parameter
+            window.open(`print_os.html?id=${result.id}`, '_blank');
+            window.location.href = 'menu.html'; // Redirect to menu
         } else {
             alert('Erro ao adicionar Ordem de Serviço.');
         }
@@ -144,10 +146,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Generate a more unique ID for OS to prevent collisions
     osIdInput.value = 'OS-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-    // Set current date and time correctly for datetime-local input
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    osDateInput.value = now.toISOString().slice(0,16);
+    // Set current date
+    osDateInput.valueAsDate = new Date();
 
     let productCounter = 0;
 

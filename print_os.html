@@ -90,32 +90,38 @@
         async function displayOSData() {
             const clientContainer = document.querySelector('.osData-client');
             const productionContainer = document.querySelector('.osData-production');
-            const params = new URLSearchParams(window.location.search);
-            const osId = params.get('id');
+            const storedOsData = localStorage.getItem('osData');
 
-            if (!osId) {
-                clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
-                productionContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
-                return;
-            }
+            if (storedOsData) {
+                const osData = JSON.parse(storedOsData);
+                localStorage.removeItem('osData'); // Clean up after use
+                populatePrintData(osData);
+            } else {
+                const params = new URLSearchParams(window.location.search);
+                const osId = params.get('id');
 
-            try {
-                const userRole = sessionStorage.getItem('userRole');
-                const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
+                if (!osId) {
+                    clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
+                    return;
                 }
-                const osDataFromServer = await response.json();
-                
-                // The products from the server might be a JSON string
-                if (typeof osDataFromServer.products === 'string') {
-                    osDataFromServer.products = JSON.parse(osDataFromServer.products);
+
+                try {
+                    const userRole = sessionStorage.getItem('userRole');
+                    const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
+                    if (!response.ok) {
+                        throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
+                    }
+                    const osDataFromServer = await response.json();
+                    
+                    // The products from the server might be a JSON string
+                    if (typeof osDataFromServer.products === 'string') {
+                        osDataFromServer.products = JSON.parse(osDataFromServer.products);
+                    }
+                    populatePrintData(osDataFromServer);
+                } catch (error) {
+                    console.error('Erro ao buscar dados da OS:', error);
+                    clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
                 }
-                populatePrintData(osDataFromServer);
-            } catch (error) {
-                console.error('Erro ao buscar dados da OS:', error);
-                clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
-                productionContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
             }
         }
 
@@ -124,32 +130,19 @@
             const productionContainer = document.querySelector('.osData-production');
 
             // Robust date handling
-            const dateValue = osData.createdAt || osData.osdate || osData.osDate;
+            const dateValue = osData.osdate || osData.osDate;
             let formattedDate;
             if (dateValue) {
-                const date = new Date(dateValue);
+                // Handle YYYY-MM-DD format by adding time to avoid timezone issues
+                const date = new Date(dateValue + 'T00:00:00');
                 if (!isNaN(date.getTime())) {
-                    // The browser's `new Date()` automatically converts the UTC timestamp from the server to the local timezone.
-                    // We just need to format it correctly.
-                    const dd = String(date.getDate()).padStart(2, '0');
-                    const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-                    const yyyy = date.getFullYear();
-                    const hh = String(date.getHours()).padStart(2, '0');
-                    const min = String(date.getMinutes()).padStart(2, '0');
-
-                    formattedDate = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+                    formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
                 }
             }
             
             if (!formattedDate || formattedDate === 'N/A') {
                 // Fallback to current date if OS date is not available
-                formattedDate = new Date().toLocaleString('pt-BR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                formattedDate = new Date().toLocaleDateString('pt-BR');
             }
 
             const products = Array.isArray(osData.products) ? osData.products : [];
