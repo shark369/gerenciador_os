@@ -90,38 +90,32 @@
         async function displayOSData() {
             const clientContainer = document.querySelector('.osData-client');
             const productionContainer = document.querySelector('.osData-production');
-            const storedOsData = localStorage.getItem('osData');
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('id');
 
-            if (storedOsData) {
-                const osData = JSON.parse(storedOsData);
-                localStorage.removeItem('osData'); // Clean up after use
-                populatePrintData(osData);
-            } else {
-                const params = new URLSearchParams(window.location.search);
-                const osId = params.get('id');
+            if (!osId) {
+                clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
+                productionContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
+                return;
+            }
 
-                if (!osId) {
-                    clientContainer.innerHTML = '<p>ID da Ordem de Serviço não encontrado.</p>';
-                    return;
+            try {
+                const userRole = sessionStorage.getItem('userRole');
+                const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
                 }
-
-                try {
-                    const userRole = sessionStorage.getItem('userRole');
-                    const response = await fetch(`/api/serviceOrders/${osId}?role=${userRole}`);
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar dados da Ordem de Serviço ou acesso negado.');
-                    }
-                    const osDataFromServer = await response.json();
-                    
-                    // The products from the server might be a JSON string
-                    if (typeof osDataFromServer.products === 'string') {
-                        osDataFromServer.products = JSON.parse(osDataFromServer.products);
-                    }
-                    populatePrintData(osDataFromServer);
-                } catch (error) {
-                    console.error('Erro ao buscar dados da OS:', error);
-                    clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
+                const osDataFromServer = await response.json();
+                
+                // The products from the server might be a JSON string
+                if (typeof osDataFromServer.products === 'string') {
+                    osDataFromServer.products = JSON.parse(osDataFromServer.products);
                 }
+                populatePrintData(osDataFromServer);
+            } catch (error) {
+                console.error('Erro ao buscar dados da OS:', error);
+                clientContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
+                productionContainer.innerHTML = `<p>Erro ao carregar dados da OS: ${error.message}</p>`;
             }
         }
 

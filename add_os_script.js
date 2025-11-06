@@ -55,14 +55,8 @@ async function openPrintWindow() {
             const result = await response.json(); // Get the response from the server
             alert('Ordem de Serviço adicionada com sucesso!');
             
-            // Fetch the full OS data to get the createdAt timestamp from the server
-            const newOsResponse = await fetch(`/api/serviceOrders/${result.id}`);
-            const newOsData = await newOsResponse.json();
-
-            // Use localStorage to pass data to the print window
-            localStorage.setItem('osData', JSON.stringify(newOsData));
-            window.open('print_os.html', '_blank');
-            window.location.href = 'menu.html'; // Redirect to menu
+            // Redirect to the print page with the new OS ID
+            window.location.href = `print_os.html?id=${result.id}`;
         } else {
             alert('Erro ao adicionar Ordem de Serviço.');
         }
@@ -150,8 +144,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Generate a more unique ID for OS to prevent collisions
     osIdInput.value = 'OS-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-    // Set current date
-    osDateInput.valueAsDate = new Date();
+    // Set current date and time correctly for datetime-local input
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    osDateInput.value = now.toISOString().slice(0,16);
 
     let productCounter = 0;
 
