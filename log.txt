@@ -86,3 +86,11 @@
 2025-11-06T19:48:06.310Z: Tabela users verificada/criada com sucesso.
 2025-11-06T19:48:23.597Z: Iniciando a inserção de nova OS no banco de dados...
 2025-11-06T19:48:23.603Z: Evento newOS emitido via Socket.IO.
+2025-11-06T19:57:21.784Z: Tentando conectar ao banco de dados PostgreSQL...
+2025-11-06T19:57:21.794Z: Backend server rodando em http://localhost:3001
+2025-11-06T19:57:21.794Z: Funcionalidade de abrir navegador desativada para teste.
+2025-11-06T19:57:21.838Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2025-11-06T19:57:21.841Z: Tabela service_orders verificada/criada com sucesso.
+2025-11-06T19:57:21.841Z: Tabela service_orders verificada/criada com sucesso.
+2025-11-06T19:57:21.842Z: Tabela converters verificada/criada com sucesso.
+2025-11-06T19:57:21.842Z: Tabela users verificada/criada com sucesso.
