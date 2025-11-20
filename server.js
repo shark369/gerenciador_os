@@ -20,12 +20,12 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const app = express();
-const backendPort = 3001;
+const backendPort = process.env.PORT || 3001;
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: `http://localhost:${backendPort}`,
+        origin: "*", // Allow all origins for simplicity. For better security, restrict this to your frontend URL.
         methods: ["GET", "POST"]
     }
 });
@@ -454,7 +454,5 @@ app.delete('/api/converters/:id', async (req, res) => {
 
 
 httpServer.listen(backendPort, () => {
-    const url = `http://localhost:${backendPort}`;
-    console.log(`Backend server rodando em ${url}`);
-    console.log('Funcionalidade de abrir navegador desativada para teste.');
+    console.log(`Backend server rodando na porta ${backendPort}`);
 });
