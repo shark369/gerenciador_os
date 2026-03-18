@@ -26,7 +26,7 @@
         <section class="report-tab-panel is-active" id="converterTabPanel" data-tab-panel="converter" role="tabpanel" aria-labelledby="tabConverterBtn">
             <div class="report-box reports-filters-panel no-print">
                 <h3>Relatório por Revendedor</h3>
-                <p class="reports-sub-note">Selecione o revendedor e o intervalo de meses para análise.</p>
+                <p class="reports-sub-note">Selecione o revendedor e o intervalo de datas para análise.</p>
 
                 <div class="reports-filters">
                     <div class="input-group">
@@ -37,13 +37,21 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="reportConverterStartMonth">Mês inicial</label>
-                        <input type="month" id="reportConverterStartMonth">
+                        <label for="reportConverterStartDay">Data inicial</label>
+                        <div class="date-select-row">
+                            <select id="reportConverterStartDay"></select>
+                            <select id="reportConverterStartMonth"></select>
+                            <select id="reportConverterStartYear"></select>
+                        </div>
                     </div>
 
                     <div class="input-group">
-                        <label for="reportConverterEndMonth">Mês final</label>
-                        <input type="month" id="reportConverterEndMonth">
+                        <label for="reportConverterEndDay">Data final</label>
+                        <div class="date-select-row">
+                            <select id="reportConverterEndDay"></select>
+                            <select id="reportConverterEndMonth"></select>
+                            <select id="reportConverterEndYear"></select>
+                        </div>
                     </div>
                 </div>
 
@@ -96,26 +104,60 @@
                 <h3>Relatório Geral (todas as OSs)</h3>
                 <p class="reports-sub-note">Use um único tipo de filtro: <strong>intervalo de datas</strong> ou <strong>mês</strong> ou <strong>ano</strong>.</p>
 
-                <div class="reports-filters">
-                    <div class="input-group">
-                        <label for="reportGeneralStartDate">Data inicial</label>
-                        <input type="date" id="reportGeneralStartDate">
-                    </div>
+                <div class="reports-filters reports-filters-general">
+                    <section class="report-filter-block report-filter-block-range" aria-labelledby="generalRangeFilterTitle">
+                        <h4 id="generalRangeFilterTitle" class="report-filter-block-title">1) Intervalo de datas</h4>
+                        <p class="report-filter-block-note">Preencha data inicial e data final.</p>
 
-                    <div class="input-group">
-                        <label for="reportGeneralEndDate">Data final</label>
-                        <input type="date" id="reportGeneralEndDate">
-                    </div>
+                        <div class="report-filter-block-grid report-filter-block-grid-range">
+                            <div class="input-group">
+                                <label for="reportGeneralStartDay">Data inicial</label>
+                                <div class="date-select-row">
+                                    <select id="reportGeneralStartDay"></select>
+                                    <select id="reportGeneralStartMonth"></select>
+                                    <select id="reportGeneralStartYear"></select>
+                                </div>
+                            </div>
 
-                    <div class="input-group">
-                        <label for="reportGeneralMonth">Mês</label>
-                        <input type="month" id="reportGeneralMonth">
-                    </div>
+                            <div class="input-group">
+                                <label for="reportGeneralEndDay">Data final</label>
+                                <div class="date-select-row">
+                                    <select id="reportGeneralEndDay"></select>
+                                    <select id="reportGeneralEndMonth"></select>
+                                    <select id="reportGeneralEndYear"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-                    <div class="input-group">
-                        <label for="reportGeneralYear">Ano</label>
-                        <input type="number" id="reportGeneralYear" min="2000" max="2100" step="1" placeholder="Ex: 2026">
-                    </div>
+                    <section class="report-filter-block report-filter-block-month" aria-labelledby="generalMonthFilterTitle">
+                        <h4 id="generalMonthFilterTitle" class="report-filter-block-title">2) Filtro por mês</h4>
+                        <p class="report-filter-block-note">Selecione o mês e o ano.</p>
+
+                        <div class="report-filter-block-grid">
+                            <div class="input-group">
+                                <label for="reportGeneralMonth">Mês</label>
+                                <div class="month-year-select-row">
+                                    <select id="reportGeneralMonth"></select>
+                                    <select id="reportGeneralMonthYear"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="report-filter-block report-filter-block-year" aria-labelledby="generalYearFilterTitle">
+                        <h4 id="generalYearFilterTitle" class="report-filter-block-title">3) Filtro por ano</h4>
+                        <p class="report-filter-block-note">Selecione somente o ano.</p>
+
+                        <div class="report-filter-block-grid">
+                            <div class="input-group">
+                                <label for="reportGeneralYear">Ano</label>
+                                <div class="month-year-select-row">
+                                    <select id="reportGeneralYear"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
                 <div class="report-actions">

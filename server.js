@@ -141,7 +141,7 @@ pool.connect()
             if (result.rows[0].count == 0) {
                 console.log('Populando tabela de usuários...');
                 const users = [
-                    { username: 'jacira', password: '123', role: 'recepcao' },
+                    { username: 'jacira', password: '9176', role: 'recepcao' },
                     { username: 'tarcio', password: '123', role: 'recepcao' },
                     { username: 'safira', password: '123', role: 'recepcao' },
                     { username: 'grafica', password: '123', role: 'grafica' },
@@ -233,7 +233,11 @@ app.get('/api/serviceOrders', async (req, res) => {
 
 // GET reports (include TODAS as OS, inclusive Entregue)
 app.get('/api/reports', async (req, res) => {
-    const { startDate, endDate, converterName } = req.query;
+    const { startDate, endDate, converterName, username } = req.query;
+
+    if (username !== 'jacira') {
+        return res.status(403).json({ message: 'Acesso negado ao relatório.' });
+    }
 
     const conditions = [];
     const params = [];

@@ -842,6 +842,89 @@ body.reports-page > .reports-container {
     margin-bottom: 10px;
 }
 
+.reports-filters-general {
+    grid-template-columns: minmax(360px, 2fr) minmax(220px, 1fr) minmax(180px, 1fr);
+    gap: 14px;
+}
+
+.report-filter-block {
+    border: 1px solid #d7e3f2;
+    border-radius: 12px;
+    padding: 12px;
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.report-filter-block-range {
+    border-left: 4px solid #1976d2;
+    background: linear-gradient(180deg, #f6fbff 0%, #ffffff 100%);
+}
+
+.report-filter-block-month {
+    border-left: 4px solid #2e7d32;
+    background: linear-gradient(180deg, #f7fcf7 0%, #ffffff 100%);
+}
+
+.report-filter-block-year {
+    border-left: 4px solid #a06a00;
+    background: linear-gradient(180deg, #fffaf0 0%, #ffffff 100%);
+}
+
+.report-filter-block-title {
+    margin: 0 0 4px;
+    font-size: 0.98rem;
+    color: #1a4e85;
+}
+
+.report-filter-block-note {
+    margin: 0 0 10px;
+    color: #475569;
+    font-size: 0.83rem;
+}
+
+.report-filter-block-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.report-filter-block-grid-range {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.report-filter-block .input-group {
+    margin-bottom: 0;
+}
+
+.date-select-row,
+.month-year-select-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.date-select-row select,
+.month-year-select-row select {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.date-select-row select[id*="Day"] {
+    max-width: 90px;
+}
+
+.date-select-row select[id*="Month"],
+.month-year-select-row select[id*="Month"] {
+    max-width: 140px;
+}
+
+.date-select-row select[id*="Year"],
+.month-year-select-row select[id*="Year"] {
+    max-width: 120px;
+}
+
 .report-results {
     margin-top: 14px;
 }
@@ -1045,6 +1128,40 @@ body.reports-page > .reports-container {
 
     .reports-table {
         min-width: 860px;
+    }
+
+    .reports-filters-general {
+        grid-template-columns: 1fr;
+    }
+
+    .report-filter-block-grid-range {
+        grid-template-columns: 1fr;
+    }
+
+    .date-select-row,
+    .month-year-select-row {
+        flex-wrap: wrap;
+    }
+
+    .date-select-row select,
+    .month-year-select-row select,
+    .date-select-row select[id*="Day"],
+    .date-select-row select[id*="Month"],
+    .date-select-row select[id*="Year"],
+    .month-year-select-row select[id*="Month"],
+    .month-year-select-row select[id*="Year"] {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .reports-filters-general {
+        grid-template-columns: 1fr;
+    }
+
+    .report-filter-block-grid-range {
+        grid-template-columns: 1fr;
     }
 }
 

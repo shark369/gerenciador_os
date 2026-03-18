@@ -1,20 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
+    const loggedUsername = sessionStorage.getItem('username');
+    const loggedUserRole = sessionStorage.getItem('userRole');
+
+    if (!loggedUserRole) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    if (loggedUsername !== 'jacira') {
+        alert('Acesso negado: apenas jacira pode acessar os relatórios.');
+        window.location.href = 'menu.html';
+        return;
+    }
+
+    const YEAR_MIN = 2000;
+    const YEAR_MAX = 2100;
+    const MONTH_LABELS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
     const tabButtons = Array.from(document.querySelectorAll('.reports-tab-btn'));
     const tabPanels = Array.from(document.querySelectorAll('.report-tab-panel'));
 
     const converterSelect = document.getElementById('reportConverterSelect');
+    const converterStartDay = document.getElementById('reportConverterStartDay');
     const converterStartMonth = document.getElementById('reportConverterStartMonth');
+    const converterStartYear = document.getElementById('reportConverterStartYear');
+    const converterEndDay = document.getElementById('reportConverterEndDay');
     const converterEndMonth = document.getElementById('reportConverterEndMonth');
+    const converterEndYear = document.getElementById('reportConverterEndYear');
     const generateConverterReportBtn = document.getElementById('generateConverterReportBtn');
     const clearConverterReportBtn = document.getElementById('clearConverterReportBtn');
     const printConverterReportBtn = document.getElementById('printConverterReportBtn');
     const converterLoading = document.getElementById('converterLoading');
 
-    const generalStartDate = document.getElementById('reportGeneralStartDate');
-    const generalEndDate = document.getElementById('reportGeneralEndDate');
+    const generalStartDay = document.getElementById('reportGeneralStartDay');
+    const generalStartMonth = document.getElementById('reportGeneralStartMonth');
+    const generalStartYear = document.getElementById('reportGeneralStartYear');
+    const generalEndDay = document.getElementById('reportGeneralEndDay');
+    const generalEndMonth = document.getElementById('reportGeneralEndMonth');
+    const generalEndYear = document.getElementById('reportGeneralEndYear');
     const generalMonth = document.getElementById('reportGeneralMonth');
+    const generalMonthYear = document.getElementById('reportGeneralMonthYear');
     const generalYear = document.getElementById('reportGeneralYear');
     const generateGeneralReportBtn = document.getElementById('generateGeneralReportBtn');
     const clearGeneralReportBtn = document.getElementById('clearGeneralReportBtn');
@@ -75,11 +101,106 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function toDateRangeFromMonth(monthValue) {
-        const [year, month] = monthValue.split('-').map(Number);
-        const start = new Date(year, month - 1, 1);
-        const end = new Date(year, month, 0);
-        return { start, end };
+    function createNumberOptions(start, end, padToTwo = false) {
+        const options = [];
+        for (let value = start; value <= end; value += 1) {
+            options.push({
+                value: String(value),
+                label: padToTwo ? String(value).padStart(2, '0') : String(value)
+            });
+        }
+        return options;
+    }
+
+    function setSelectOptions(selectEl, options, placeholder) {
+        if (!selectEl) return;
+
+        selectEl.innerHTML = '';
+
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = placeholder;
+        selectEl.appendChild(placeholderOption);
+
+        options.forEach((item) => {
+            const optionEl = document.createElement('option');
+            optionEl.value = item.value;
+            optionEl.textContent = item.label;
+            selectEl.appendChild(optionEl);
+        });
+    }
+
+    function initializeDateSelectors() {
+        const dayOptions = createNumberOptions(1, 31, true);
+        const yearOptions = createNumberOptions(YEAR_MIN, YEAR_MAX, false);
+        const monthOptions = MONTH_LABELS.map((label, index) => ({
+            value: String(index + 1),
+            label
+        }));
+
+        [converterStartDay, converterEndDay, generalStartDay, generalEndDay].forEach((selectEl) => {
+            setSelectOptions(selectEl, dayOptions, 'dia');
+        });
+
+        [
+            converterStartMonth,
+            converterEndMonth,
+            generalStartMonth,
+            generalEndMonth,
+            generalMonth
+        ].forEach((selectEl) => {
+            setSelectOptions(selectEl, monthOptions, 'mês');
+        });
+
+        [
+            converterStartYear,
+            converterEndYear,
+            generalStartYear,
+            generalEndYear,
+            generalMonthYear,
+            generalYear
+        ].forEach((selectEl) => {
+            setSelectOptions(selectEl, yearOptions, 'ano');
+        });
+    }
+
+    function toDateFromParts(dayValue, monthValue, yearValue, label) {
+        const hasAnyPart = Boolean(dayValue || monthValue || yearValue);
+        const hasAllParts = Boolean(dayValue && monthValue && yearValue);
+
+        if (!hasAnyPart) return { empty: true };
+        if (!hasAllParts) return { error: `${label}: selecione dia, mês e ano.` };
+
+        const day = Number(dayValue);
+        const month = Number(monthValue);
+        const year = Number(yearValue);
+
+        if (
+            !Number.isInteger(day)
+            || !Number.isInteger(month)
+            || !Number.isInteger(year)
+            || month < 1
+            || month > 12
+            || day < 1
+            || day > 31
+            || year < YEAR_MIN
+            || year > YEAR_MAX
+        ) {
+            return { error: `${label} inválida.` };
+        }
+
+        const date = new Date(year, month - 1, day);
+        const isValidDate = (
+            date.getFullYear() === year
+            && date.getMonth() === month - 1
+            && date.getDate() === day
+        );
+
+        if (!isValidDate) {
+            return { error: `${label} inválida.` };
+        }
+
+        return { date };
     }
 
     function formatDateForApi(dateObj) {
@@ -259,9 +380,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (startDate) params.set('startDate', startDate);
         if (endDate) params.set('endDate', endDate);
         if (converterName) params.set('converterName', converterName);
+        params.set('username', loggedUsername || '');
 
         const response = await fetch(`/api/reports?${params.toString()}`);
         if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error('Acesso negado ao relatório.');
+            }
+
             throw new Error('Erro ao buscar dados do relatório');
         }
 
@@ -290,16 +416,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearConverterFilters() {
         converterSelect.value = '';
-        converterStartMonth.value = '';
-        converterEndMonth.value = '';
+        [
+            converterStartDay,
+            converterStartMonth,
+            converterStartYear,
+            converterEndDay,
+            converterEndMonth,
+            converterEndYear
+        ].forEach((selectEl) => {
+            selectEl.value = '';
+        });
         hideConverterOutput();
     }
 
     function clearGeneralFilters() {
-        generalStartDate.value = '';
-        generalEndDate.value = '';
-        generalMonth.value = '';
-        generalYear.value = '';
+        [
+            generalStartDay,
+            generalStartMonth,
+            generalStartYear,
+            generalEndDay,
+            generalEndMonth,
+            generalEndYear,
+            generalMonth,
+            generalMonthYear,
+            generalYear
+        ].forEach((selectEl) => {
+            selectEl.value = '';
+        });
         hideGeneralOutput();
     }
 
@@ -310,29 +453,47 @@ document.addEventListener('DOMContentLoaded', () => {
             hideConverterOutput();
 
             const selectedConverter = converterSelect.value;
-            const startMonth = converterStartMonth.value;
-            const endMonth = converterEndMonth.value;
-
             if (!selectedConverter) {
                 alert('Selecione um revendedor para gerar o relatório.');
                 return;
             }
 
-            if (!startMonth || !endMonth) {
-                alert('Selecione mês inicial e mês final para o relatório por revendedor.');
+            const startParsed = toDateFromParts(
+                converterStartDay.value,
+                converterStartMonth.value,
+                converterStartYear.value,
+                'Data inicial'
+            );
+
+            const endParsed = toDateFromParts(
+                converterEndDay.value,
+                converterEndMonth.value,
+                converterEndYear.value,
+                'Data final'
+            );
+
+            if (startParsed.empty || endParsed.empty) {
+                alert('Selecione data inicial e data final completas para o relatório por revendedor.');
                 return;
             }
 
-            const startRange = toDateRangeFromMonth(startMonth);
-            const endRange = toDateRangeFromMonth(endMonth);
-
-            if (endRange.end < startRange.start) {
-                alert('O mês final não pode ser menor que o mês inicial.');
+            if (startParsed.error) {
+                alert(startParsed.error);
                 return;
             }
 
-            const startDate = formatDateForApi(startRange.start);
-            const endDate = formatDateForApi(endRange.end);
+            if (endParsed.error) {
+                alert(endParsed.error);
+                return;
+            }
+
+            if (endParsed.date < startParsed.date) {
+                alert('A data final não pode ser menor que a data inicial.');
+                return;
+            }
+
+            const startDate = formatDateForApi(startParsed.date);
+            const endDate = formatDateForApi(endParsed.date);
 
             const osList = await fetchReportData({
                 startDate,
@@ -356,32 +517,57 @@ document.addEventListener('DOMContentLoaded', () => {
             setPrintAvailability('converter', true);
         } catch (error) {
             console.error('Erro ao gerar relatório por revendedor:', error);
-            alert('Erro ao gerar relatório por revendedor. Tente novamente.');
+            alert(error.message === 'Acesso negado ao relatório.' ? error.message : 'Erro ao gerar relatório por revendedor. Tente novamente.');
         } finally {
             setLoading('converter', false);
         }
     }
 
+    function hasAnyGeneralDateSelection() {
+        return Boolean(
+            generalStartDay.value
+            || generalStartMonth.value
+            || generalStartYear.value
+            || generalEndDay.value
+            || generalEndMonth.value
+            || generalEndYear.value
+        );
+    }
+
+    function hasAnyGeneralMonthSelection() {
+        return Boolean(generalMonth.value || generalMonthYear.value);
+    }
+
     function clearGeneralAlternativeFilters(except) {
         if (except !== 'date') {
-            generalStartDate.value = '';
-            generalEndDate.value = '';
+            [
+                generalStartDay,
+                generalStartMonth,
+                generalStartYear,
+                generalEndDay,
+                generalEndMonth,
+                generalEndYear
+            ].forEach((selectEl) => {
+                selectEl.value = '';
+            });
         }
+
         if (except !== 'month') {
             generalMonth.value = '';
+            generalMonthYear.value = '';
         }
+
         if (except !== 'year') {
             generalYear.value = '';
         }
     }
 
     function buildGeneralDateRange() {
-        const hasStart = Boolean(generalStartDate.value);
-        const hasEnd = Boolean(generalEndDate.value);
-        const hasMonth = Boolean(generalMonth.value);
-        const hasYear = Boolean(String(generalYear.value || '').trim());
+        const hasDateMode = hasAnyGeneralDateSelection();
+        const hasMonthMode = hasAnyGeneralMonthSelection();
+        const hasYearMode = Boolean(generalYear.value);
 
-        const selectedModeCount = [hasStart || hasEnd, hasMonth, hasYear].filter(Boolean).length;
+        const selectedModeCount = [hasDateMode, hasMonthMode, hasYearMode].filter(Boolean).length;
 
         if (selectedModeCount === 0) {
             return { error: 'Escolha um filtro: intervalo de datas, mês ou ano.' };
@@ -391,37 +577,68 @@ document.addEventListener('DOMContentLoaded', () => {
             return { error: 'Use apenas um tipo de filtro por vez (datas, mês ou ano).' };
         }
 
-        if (hasStart || hasEnd) {
-            if (!hasStart || !hasEnd) {
-                return { error: 'Para intervalo de datas, preencha data inicial e data final.' };
+        if (hasDateMode) {
+            const startParsed = toDateFromParts(
+                generalStartDay.value,
+                generalStartMonth.value,
+                generalStartYear.value,
+                'Data inicial'
+            );
+
+            const endParsed = toDateFromParts(
+                generalEndDay.value,
+                generalEndMonth.value,
+                generalEndYear.value,
+                'Data final'
+            );
+
+            if (startParsed.empty || endParsed.empty) {
+                return { error: 'Para intervalo de datas, preencha data inicial e data final completas.' };
             }
 
-            const start = new Date(generalStartDate.value);
-            const end = new Date(generalEndDate.value);
+            if (startParsed.error) return { error: startParsed.error };
+            if (endParsed.error) return { error: endParsed.error };
 
-            if (end < start) {
+            if (endParsed.date < startParsed.date) {
                 return { error: 'A data final não pode ser menor que a data inicial.' };
             }
 
             return {
-                startDate: formatDateForApi(start),
-                endDate: formatDateForApi(end),
-                label: `${formatDateToPtBr(start)} até ${formatDateToPtBr(end)}`
+                startDate: formatDateForApi(startParsed.date),
+                endDate: formatDateForApi(endParsed.date),
+                label: `${formatDateToPtBr(startParsed.date)} até ${formatDateToPtBr(endParsed.date)}`
             };
         }
 
-        if (hasMonth) {
-            const monthRange = toDateRangeFromMonth(generalMonth.value);
+        if (hasMonthMode) {
+            if (!generalMonth.value || !generalMonthYear.value) {
+                return { error: 'Para filtro por mês, selecione mês e ano.' };
+            }
+
+            const month = Number(generalMonth.value);
+            const year = Number(generalMonthYear.value);
+
+            if (!Number.isInteger(month) || month < 1 || month > 12) {
+                return { error: 'Mês inválido para o filtro mensal.' };
+            }
+
+            if (!Number.isInteger(year) || year < YEAR_MIN || year > YEAR_MAX) {
+                return { error: `Ano inválido para o filtro mensal (entre ${YEAR_MIN} e ${YEAR_MAX}).` };
+            }
+
+            const start = new Date(year, month - 1, 1);
+            const end = new Date(year, month, 0);
+
             return {
-                startDate: formatDateForApi(monthRange.start),
-                endDate: formatDateForApi(monthRange.end),
-                label: `${formatDateToPtBr(monthRange.start)} até ${formatDateToPtBr(monthRange.end)}`
+                startDate: formatDateForApi(start),
+                endDate: formatDateForApi(end),
+                label: `${MONTH_LABELS[month - 1]} de ${year}`
             };
         }
 
         const yearNum = Number(generalYear.value);
-        if (!Number.isInteger(yearNum) || yearNum < 2000 || yearNum > 2100) {
-            return { error: 'Informe um ano válido entre 2000 e 2100.' };
+        if (!Number.isInteger(yearNum) || yearNum < YEAR_MIN || yearNum > YEAR_MAX) {
+            return { error: `Informe um ano válido entre ${YEAR_MIN} e ${YEAR_MAX}.` };
         }
 
         const start = new Date(yearNum, 0, 1);
@@ -466,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setPrintAvailability('general', true);
         } catch (error) {
             console.error('Erro ao gerar relatório geral:', error);
-            alert('Erro ao gerar relatório geral. Tente novamente.');
+            alert(error.message === 'Acesso negado ao relatório.' ? error.message : 'Erro ao gerar relatório geral. Tente novamente.');
         } finally {
             setLoading('general', false);
         }
@@ -487,20 +704,33 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     }
 
-    generalStartDate.addEventListener('change', () => {
-        if (generalStartDate.value || generalEndDate.value) clearGeneralAlternativeFilters('date');
+    [
+        generalStartDay,
+        generalStartMonth,
+        generalStartYear,
+        generalEndDay,
+        generalEndMonth,
+        generalEndYear
+    ].forEach((selectEl) => {
+        selectEl.addEventListener('change', () => {
+            if (hasAnyGeneralDateSelection()) {
+                clearGeneralAlternativeFilters('date');
+            }
+        });
     });
 
-    generalEndDate.addEventListener('change', () => {
-        if (generalStartDate.value || generalEndDate.value) clearGeneralAlternativeFilters('date');
+    [generalMonth, generalMonthYear].forEach((selectEl) => {
+        selectEl.addEventListener('change', () => {
+            if (hasAnyGeneralMonthSelection()) {
+                clearGeneralAlternativeFilters('month');
+            }
+        });
     });
 
-    generalMonth.addEventListener('change', () => {
-        if (generalMonth.value) clearGeneralAlternativeFilters('month');
-    });
-
-    generalYear.addEventListener('input', () => {
-        if (String(generalYear.value || '').trim()) clearGeneralAlternativeFilters('year');
+    generalYear.addEventListener('change', () => {
+        if (generalYear.value) {
+            clearGeneralAlternativeFilters('year');
+        }
     });
 
     generateConverterReportBtn.addEventListener('click', generateConverterReport);
@@ -520,6 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body.removeAttribute('data-print-tab');
     });
 
+    initializeDateSelectors();
     hideConverterOutput();
     hideGeneralOutput();
     setActiveTab('converter');
