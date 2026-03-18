@@ -18,6 +18,9 @@ const { Server } = require('socket.io');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const JACIRA_USERNAME = 'jacira';
+const JACIRA_EXPECTED_PASSWORD = '9176';
+const JACIRA_ROLE = 'recepcao';
 
 const app = express();
 const backendPort = process.env.PORT || 3001;
@@ -141,7 +144,7 @@ pool.connect()
             if (result.rows[0].count == 0) {
                 console.log('Populando tabela de usuários...');
                 const users = [
-                    { username: 'jacira', password: '9176', role: 'recepcao' },
+                    { username: JACIRA_USERNAME, password: JACIRA_EXPECTED_PASSWORD, role: JACIRA_ROLE },
                     { username: 'tarcio', password: '123', role: 'recepcao' },
                     { username: 'safira', password: '123', role: 'recepcao' },
                     { username: 'grafica', password: '123', role: 'grafica' },
@@ -156,6 +159,42 @@ pool.connect()
                     );
                 }
                 console.log('Tabela de usuários populada com sucesso.');
+            }
+
+            // Garante que em qualquer ambiente (incluindo produção)
+            // o usuário jacira utilize a senha 9176.
+            const jaciraResult = await client.query(
+                'SELECT username, password, role FROM users WHERE username = $1',
+                [JACIRA_USERNAME]
+            );
+
+            if (jaciraResult.rowCount === 0) {
+                const jaciraHashedPassword = await bcrypt.hash(JACIRA_EXPECTED_PASSWORD, saltRounds);
+                await client.query(
+                    'INSERT INTO users (username, password, role) VALUES ($1, $2, $3)',
+                    [JACIRA_USERNAME, jaciraHashedPassword, JACIRA_ROLE]
+                );
+                console.log('Usuária jacira criada com senha padrão 9176.');
+            } else {
+                const jaciraUser = jaciraResult.rows[0];
+                const hasExpectedPassword = await bcrypt.compare(JACIRA_EXPECTED_PASSWORD, jaciraUser.password);
+
+                if (!hasExpectedPassword) {
+                    const newJaciraHash = await bcrypt.hash(JACIRA_EXPECTED_PASSWORD, saltRounds);
+                    await client.query(
+                        'UPDATE users SET password = $1 WHERE username = $2',
+                        [newJaciraHash, JACIRA_USERNAME]
+                    );
+                    console.log('Senha da jacira atualizada para 9176.');
+                }
+
+                if (jaciraUser.role !== JACIRA_ROLE) {
+                    await client.query(
+                        'UPDATE users SET role = $1 WHERE username = $2',
+                        [JACIRA_ROLE, JACIRA_USERNAME]
+                    );
+                    console.log('Role da jacira ajustada para recepcao.');
+                }
             }
         })
         .catch(err => {
