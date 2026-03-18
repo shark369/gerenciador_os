@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Gerenciador de OS STAMPEX</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="reports-page">
+    <div class="container reports-container">
+        <header class="reports-header no-print">
+            <a href="revendedor_menu.html" class="back-to-menu-btn">Voltar ao Menu do Revendedor</a>
+            <div class="reports-title-wrap">
+                <h2>Relatórios de Ordens de Serviço</h2>
+                <p class="reports-note">
+                    Esta página considera <strong>TODAS</strong> as OSs do período, inclusive as com status <strong>Entregue</strong>.
+                </p>
+            </div>
+        </header>
+
+        <div class="reports-tab-buttons no-print" role="tablist" aria-label="Tipos de relatório">
+            <button type="button" class="reports-tab-btn is-active" id="tabConverterBtn" data-tab="converter" role="tab" aria-controls="converterTabPanel" aria-selected="true">Por revendedor</button>
+            <button type="button" class="reports-tab-btn" id="tabGeneralBtn" data-tab="general" role="tab" aria-controls="generalTabPanel" aria-selected="false">Relatório geral</button>
+        </div>
+
+        <section class="report-tab-panel is-active" id="converterTabPanel" data-tab-panel="converter" role="tabpanel" aria-labelledby="tabConverterBtn">
+            <div class="report-box reports-filters-panel no-print">
+                <h3>Relatório por Revendedor</h3>
+                <p class="reports-sub-note">Selecione o revendedor e o intervalo de meses para análise.</p>
+
+                <div class="reports-filters">
+                    <div class="input-group">
+                        <label for="reportConverterSelect">Revendedor</label>
+                        <select id="reportConverterSelect">
+                            <option value="">Selecione um revendedor</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reportConverterStartMonth">Mês inicial</label>
+                        <input type="month" id="reportConverterStartMonth">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reportConverterEndMonth">Mês final</label>
+                        <input type="month" id="reportConverterEndMonth">
+                    </div>
+                </div>
+
+                <div class="report-actions">
+                    <button type="button" class="submit-button-style" id="generateConverterReportBtn">Gerar relatório</button>
+                    <button type="button" class="report-secondary-btn" id="clearConverterReportBtn">Limpar filtros</button>
+                    <button type="button" class="report-print-btn" id="printConverterReportBtn" disabled>Imprimir relatório</button>
+                </div>
+
+                <div id="converterLoading" class="report-loading" hidden>Carregando relatório...</div>
+            </div>
+
+            <div id="converterResultSection" class="report-results report-box" hidden>
+                <div class="report-print-header print-only">
+                    <h3>Relatório por Revendedor</h3>
+                    <p id="converterPrintGeneratedAt"></p>
+                </div>
+
+                <p id="converterReportMeta" class="report-meta"></p>
+                <div id="converterSummaryCards" class="reports-summary-grid"></div>
+
+                <div class="reports-table-wrapper">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>ID OS</th>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Celular</th>
+                                <th>Status</th>
+                                <th>Valor Total</th>
+                                <th>Em Aberto</th>
+                                <th>Setor</th>
+                                <th>Criado por</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody id="converterReportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="converterNoData" class="reports-empty" hidden>
+                Nenhuma OS encontrada para este revendedor no intervalo informado.
+            </div>
+        </section>
+
+        <section class="report-tab-panel" id="generalTabPanel" data-tab-panel="general" role="tabpanel" aria-labelledby="tabGeneralBtn">
+            <div class="report-box reports-filters-panel no-print">
+                <h3>Relatório Geral (todas as OSs)</h3>
+                <p class="reports-sub-note">Use um único tipo de filtro: <strong>intervalo de datas</strong> ou <strong>mês</strong> ou <strong>ano</strong>.</p>
+
+                <div class="reports-filters">
+                    <div class="input-group">
+                        <label for="reportGeneralStartDate">Data inicial</label>
+                        <input type="date" id="reportGeneralStartDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reportGeneralEndDate">Data final</label>
+                        <input type="date" id="reportGeneralEndDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reportGeneralMonth">Mês</label>
+                        <input type="month" id="reportGeneralMonth">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reportGeneralYear">Ano</label>
+                        <input type="number" id="reportGeneralYear" min="2000" max="2100" step="1" placeholder="Ex: 2026">
+                    </div>
+                </div>
+
+                <div class="report-actions">
+                    <button type="button" class="submit-button-style" id="generateGeneralReportBtn">Gerar relatório</button>
+                    <button type="button" class="report-secondary-btn" id="clearGeneralReportBtn">Limpar filtros</button>
+                    <button type="button" class="report-print-btn" id="printGeneralReportBtn" disabled>Imprimir relatório</button>
+                </div>
+
+                <div id="generalLoading" class="report-loading" hidden>Carregando relatório...</div>
+            </div>
+
+            <div id="generalResultSection" class="report-results report-box" hidden>
+                <div class="report-print-header print-only">
+                    <h3>Relatório Geral</h3>
+                    <p id="generalPrintGeneratedAt"></p>
+                </div>
+
+                <p id="generalReportMeta" class="report-meta"></p>
+                <div id="generalSummaryCards" class="reports-summary-grid"></div>
+
+                <div class="reports-table-wrapper">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>ID OS</th>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Celular</th>
+                                <th>Status</th>
+                                <th>Valor Total</th>
+                                <th>Em Aberto</th>
+                                <th>Setor</th>
+                                <th>Criado por</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody id="generalReportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="generalNoData" class="reports-empty" hidden>
+                Nenhuma OS encontrada para o filtro informado.
+            </div>
+        </section>
+    </div>
+
+    <script src="relatorios_script.js"></script>
+</body>
+</html>

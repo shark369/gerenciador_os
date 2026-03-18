@@ -145,7 +145,7 @@ pool.connect()
                     { username: 'tarcio', password: '123', role: 'recepcao' },
                     { username: 'safira', password: '123', role: 'recepcao' },
                     { username: 'grafica', password: '123', role: 'grafica' },
-                    { username: 'impressao', password: '123', role: 'impressao' }
+                    { username: 'junior', password: '123', role: 'recepcao' }
                 ];
 
                 for (const user of users) {
@@ -228,6 +228,62 @@ app.get('/api/serviceOrders', async (req, res) => {
     } catch (err) {
         console.error('Erro ao buscar ordens de serviço:', err.stack);
         res.status(500).json({ message: 'Erro ao buscar ordens de serviço.' });
+    }
+});
+
+// GET reports (include TODAS as OS, inclusive Entregue)
+app.get('/api/reports', async (req, res) => {
+    const { startDate, endDate, converterName } = req.query;
+
+    const conditions = [];
+    const params = [];
+
+    if (startDate) {
+        params.push(startDate);
+        conditions.push(`osDate >= $${params.length}`);
+    }
+
+    if (endDate) {
+        params.push(endDate);
+        conditions.push(`osDate <= $${params.length}`);
+    }
+
+    if (converterName) {
+        params.push(converterName);
+        conditions.push(`LOWER(TRIM(clientName)) = LOWER(TRIM($${params.length}))`);
+    }
+
+    let query = `
+        SELECT
+            id,
+            osId,
+            clientName,
+            clientPhone,
+            osDate,
+            description,
+            status,
+            discountType,
+            discountValue,
+            totalValue,
+            totalDue,
+            sector,
+            createdBy,
+            createdAt
+        FROM service_orders
+    `;
+
+    if (conditions.length > 0) {
+        query += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
+    query += ' ORDER BY osDate DESC, createdAt DESC';
+
+    try {
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao gerar relatório de OS:', err.stack);
+        res.status(500).json({ message: 'Erro ao gerar relatório de OS.' });
     }
 });
 
