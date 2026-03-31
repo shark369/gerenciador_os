@@ -21,6 +21,9 @@ const saltRounds = 10;
 const JACIRA_USERNAME = 'jacira';
 const JACIRA_EXPECTED_PASSWORD = '9176';
 const JACIRA_ROLE = 'recepcao';
+const JUNIOR_USERNAME = 'junior';
+const JUNIOR_EXPECTED_PASSWORD = '123';
+const JUNIOR_ROLE = 'recepcao';
 
 const app = express();
 const backendPort = process.env.PORT || 3001;
@@ -148,7 +151,7 @@ pool.connect()
                     { username: 'tarcio', password: '123', role: 'recepcao' },
                     { username: 'safira', password: '123', role: 'recepcao' },
                     { username: 'grafica', password: '123', role: 'grafica' },
-                    { username: 'junior', password: '123', role: 'recepcao' }
+                    { username: JUNIOR_USERNAME, password: JUNIOR_EXPECTED_PASSWORD, role: JUNIOR_ROLE }
                 ];
 
                 for (const user of users) {
@@ -194,6 +197,42 @@ pool.connect()
                         [JACIRA_ROLE, JACIRA_USERNAME]
                     );
                     console.log('Role da jacira ajustada para recepcao.');
+                }
+            }
+
+            // Garante que em qualquer ambiente (incluindo produção)
+            // o usuário junior utilize a senha 123.
+            const juniorResult = await client.query(
+                'SELECT username, password, role FROM users WHERE username = $1',
+                [JUNIOR_USERNAME]
+            );
+
+            if (juniorResult.rowCount === 0) {
+                const juniorHashedPassword = await bcrypt.hash(JUNIOR_EXPECTED_PASSWORD, saltRounds);
+                await client.query(
+                    'INSERT INTO users (username, password, role) VALUES ($1, $2, $3)',
+                    [JUNIOR_USERNAME, juniorHashedPassword, JUNIOR_ROLE]
+                );
+                console.log('Usuário junior criado com senha padrão 123.');
+            } else {
+                const juniorUser = juniorResult.rows[0];
+                const hasExpectedPassword = await bcrypt.compare(JUNIOR_EXPECTED_PASSWORD, juniorUser.password);
+
+                if (!hasExpectedPassword) {
+                    const newJuniorHash = await bcrypt.hash(JUNIOR_EXPECTED_PASSWORD, saltRounds);
+                    await client.query(
+                        'UPDATE users SET password = $1 WHERE username = $2',
+                        [newJuniorHash, JUNIOR_USERNAME]
+                    );
+                    console.log('Senha do junior atualizada para 123.');
+                }
+
+                if (juniorUser.role !== JUNIOR_ROLE) {
+                    await client.query(
+                        'UPDATE users SET role = $1 WHERE username = $2',
+                        [JUNIOR_ROLE, JUNIOR_USERNAME]
+                    );
+                    console.log('Role do junior ajustada para recepcao.');
                 }
             }
         })

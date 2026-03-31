@@ -229,3 +229,10 @@
 2026-03-18T17:24:06.332Z: Tabela service_orders verificada/criada com sucesso.
 2026-03-18T17:24:06.332Z: Tabela converters verificada/criada com sucesso.
 2026-03-18T17:24:06.333Z: Tabela users verificada/criada com sucesso.
+2026-03-31T20:37:23.280Z: Tentando conectar ao banco de dados PostgreSQL...
+2026-03-31T20:37:23.295Z: Backend server rodando na porta 3001
+2026-03-31T20:37:23.387Z: Conexão com o banco de dados PostgreSQL estabelecida com sucesso!
+2026-03-31T20:37:23.419Z: Tabela service_orders verificada/criada com sucesso.
+2026-03-31T20:37:23.420Z: Tabela service_orders verificada/criada com sucesso.
+2026-03-31T20:37:23.420Z: Tabela converters verificada/criada com sucesso.
+2026-03-31T20:37:23.421Z: Tabela users verificada/criada com sucesso.
