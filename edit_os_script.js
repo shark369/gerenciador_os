@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.querySelector('.container');
+    const userRole = sessionStorage.getItem('userRole');
+    const loggedInUsername = sessionStorage.getItem('username');
+    const restrictedRecepcaoUsers = ['tarcio', 'safira', 'junior'];
+    const isRestrictedRecepcaoUser = userRole === 'recepcao' && restrictedRecepcaoUsers.includes(loggedInUsername);
+
+    if (!userRole) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    if (isRestrictedRecepcaoUser) {
+        alert('Este usuário não tem permissão para editar Ordens de Serviço.');
+        window.location.href = 'menu.html';
+        return;
+    }
+
     const osListDiv = document.createElement('div');
     osListDiv.id = 'osList';
     container.appendChild(osListDiv);
@@ -160,8 +176,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('editSector').addEventListener('change', calculateEditTotal); // Listen for sector change
 
     // Hide sector input if not recepcao
-    const userRole = sessionStorage.getItem('userRole');
-    const loggedInUsername = sessionStorage.getItem('username'); // Get logged-in username
     if (userRole !== 'recepcao') {
         const editSectorInputGroup = document.getElementById('editSectorInputGroup');
         if (editSectorInputGroup) {
@@ -368,7 +382,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             totaldue: totalDue,
             sector: document.getElementById('editSector').value, // Include sector
             createdby: editFormDiv.dataset.createdBy || loggedInUsername, // Use existing or current user
-            userrole: userRole // Pass user role for backend logic
+            userrole: userRole, // Pass user role for backend logic
+            username: loggedInUsername,
+            action: 'edit'
         };
 
         try {

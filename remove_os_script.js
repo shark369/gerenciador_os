@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.querySelector('.container');
+    const userRole = sessionStorage.getItem('userRole');
+    const username = sessionStorage.getItem('username');
+    const restrictedRecepcaoUsers = ['tarcio', 'safira', 'junior'];
+    const isRestrictedRecepcaoUser = userRole === 'recepcao' && restrictedRecepcaoUsers.includes(username);
+
+    if (!userRole) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    if (isRestrictedRecepcaoUser) {
+        alert('Este usuário não tem permissão para remover Ordens de Serviço.');
+        window.location.href = 'menu.html';
+        return;
+    }
+
     const osListDiv = document.createElement('div');
     osListDiv.id = 'osList';
     container.appendChild(osListDiv);
@@ -57,7 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (confirm(`Tem certeza que deseja remover a OS ${osId} do cliente ${clientName}?`)) {
                     try {
-                        const username = sessionStorage.getItem('username');
                         if (!username) {
                             alert('Usuário não logado. Faça o login novamente.');
                             window.location.href = 'index.html';

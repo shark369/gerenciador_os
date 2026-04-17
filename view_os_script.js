@@ -217,7 +217,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!osToUpdate) throw new Error('OS não encontrada.');
 
             // Prepare data for PUT request
-            const updatedData = { ...osToUpdate, status: newStatus, userRole: userRole };
+            const updatedData = {
+                ...osToUpdate,
+                status: newStatus,
+                userrole: userRole,
+                username: loggedInUsername,
+                action: 'status-update'
+            };
             // The pg driver handles JSON objects automatically, no need to stringify here.
             // updatedData.products = JSON.stringify(updatedData.products);
 

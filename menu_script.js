@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logoutButton');
     const userRole = sessionStorage.getItem('userRole');
     const username = sessionStorage.getItem('username'); // Get username
+    const restrictedRecepcaoUsers = ['tarcio', 'safira', 'junior'];
+    const isRestrictedRecepcaoUser = userRole === 'recepcao' && restrictedRecepcaoUsers.includes(username);
 
     const addOsLink = document.getElementById('addOsLink');
     const removeOsLink = document.getElementById('removeOsLink');
@@ -11,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (userRole) {
         if (userRole === 'recepcao') {
-            // For recepcao, check specific usernames
-            if (username === 'tarcio' || username === 'safira') {
+            // For restricted recepcao users, hide critical actions
+            if (isRestrictedRecepcaoUser) {
                 if (removeOsLink) removeOsLink.style.display = 'none';
                 if (editOsLink) editOsLink.style.display = 'none';
             }

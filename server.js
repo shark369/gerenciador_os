@@ -24,6 +24,11 @@ const JACIRA_ROLE = 'recepcao';
 const JUNIOR_USERNAME = 'junior';
 const JUNIOR_EXPECTED_PASSWORD = '123';
 const JUNIOR_ROLE = 'recepcao';
+const RESTRICTED_RECEPCAO_USERNAMES = ['tarcio', 'safira', JUNIOR_USERNAME];
+
+function isRestrictedRecepcaoUser(username, role) {
+    return role === 'recepcao' && RESTRICTED_RECEPCAO_USERNAMES.includes(username);
+}
 
 const app = express();
 const backendPort = process.env.PORT || 3001;
@@ -441,21 +446,57 @@ app.post('/api/serviceOrders', async (req, res) => {
 // PUT (update) an existing service order
 app.put('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
-    const { osid, clientname, clientphone, osdate, description, status, products, discount, totalvalue, totaldue, sector, createdby, userrole } = req.body;
+    const {
+        osid,
+        clientname,
+        clientphone,
+        osdate,
+        description,
+        status,
+        products,
+        discount,
+        totalvalue,
+        totaldue,
+        sector,
+        createdby,
+        userrole,
+        userRole,
+        username,
+        action
+    } = req.body;
     const productsJson = JSON.stringify(products); // Must stringify for pg driver
     const discountType = discount ? discount.type : null;
     const discountValue = discount ? discount.value : null;
+    const normalizedUserRole = userrole || userRole;
 
     if (!clientname || !clientphone) {
         return res.status(400).json({ message: 'Nome do cliente e celular são obrigatórios.' });
     }
 
     let newTotalDue = totaldue;
-    if (status === 'Paga' && userrole === 'recepcao') {
+    if (status === 'Paga' && normalizedUserRole === 'recepcao') {
         newTotalDue = 0;
     }
 
     try {
+        if (action === 'edit') {
+            if (!username) {
+                return res.status(400).json({ message: 'Usuário não informado para validar a edição da OS.' });
+            }
+
+            const userResult = await pool.query('SELECT role FROM users WHERE username = $1', [username]);
+
+            if (userResult.rows.length === 0) {
+                return res.status(403).json({ message: 'Usuário não encontrado.' });
+            }
+
+            const editorRole = userResult.rows[0].role;
+
+            if (isRestrictedRecepcaoUser(username, editorRole)) {
+                return res.status(403).json({ message: 'Este usuário não tem permissão para editar Ordens de Serviço.' });
+            }
+        }
+
         const result = await pool.query(
             'UPDATE service_orders SET osId = $1, clientName = $2, clientPhone = $3, osDate = $4, description = $5, status = $6, products = $7, discountType = $8, discountValue = $9, totalValue = $10, totalDue = $11, sector = $12, createdBy = $13 WHERE id = $14',
             [osid, clientname, clientphone, osdate, description, status, productsJson, discountType, discountValue, totalvalue, newTotalDue, sector, createdby, id]
@@ -486,7 +527,7 @@ app.delete('/api/serviceOrders/:id', async (req, res) => {
         const deleterRole = userResult.rows[0].role;
 
         // Apply the security rule
-        if ((username === 'tarcio' || username === 'safira') && deleterRole === 'recepcao') {
+        if (isRestrictedRecepcaoUser(username, deleterRole)) {
             return res.status(403).json({ message: 'Este usuário não tem permissão para remover Ordens de Serviço.' });
         }
 
