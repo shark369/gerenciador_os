@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Senha - Gerenciador de OS STAMPEX</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .password-box {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 340px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        .password-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .message-alert {
+            display: none;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .message-alert.error {
+            display: block;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message-alert.success {
+            display: block;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="password-box">
+        <h2>Alterar Senha</h2>
+
+        <div id="messageAlert" class="message-alert"></div>
+
+        <form id="changePasswordForm">
+            <div class="input-group">
+                <label for="username">Usuário:</label>
+                <input type="text" id="username" name="username" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+            </div>
+            <div class="input-group">
+                <label for="currentPassword">Senha Atual:</label>
+                <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password">
+            </div>
+            <div class="input-group">
+                <label for="newPassword">Nova Senha:</label>
+                <input type="password" id="newPassword" name="newPassword" required autocomplete="new-password">
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Confirmar Nova Senha:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+            </div>
+            <button type="submit" id="submitBtn">Salvar Nova Senha</button>
+        </form>
+
+        <a href="menu.html" class="back-to-menu-btn" style="margin-top: 15px;">Voltar ao Menu</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = sessionStorage.getItem('username');
+            const userRole = sessionStorage.getItem('userRole');
+
+            if (!username || !userRole) {
+                alert('Você precisa estar logado para alterar sua senha.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const usernameInput = document.getElementById('username');
+            usernameInput.value = username;
+
+            const form = document.getElementById('changePasswordForm');
+            const messageAlert = document.getElementById('messageAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function showMessage(text, isError = false) {
+                messageAlert.textContent = text;
+                messageAlert.className = 'message-alert ' + (isError ? 'error' : 'success');
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageAlert.style.display = 'none';
+
+                const currentPassword = document.getElementById('currentPassword').value.trim();
+                const newPassword = document.getElementById('newPassword').value.trim();
+                const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    showMessage('Preencha todos os campos.', true);
+                    return;
+                }
+
+                if (newPassword.length < 3) {
+                    showMessage('A nova senha deve ter no mínimo 3 caracteres.', true);
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showMessage('A nova senha e a confirmação não coincidem.', true);
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Salvando...';
+
+                try {
+                    const response = await fetch('/api/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username,
+                            currentPassword,
+                            newPassword
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage(data.message || 'Senha alterada com sucesso!', false);
+                        form.reset();
+                        usernameInput.value = username;
+                        setTimeout(() => {
+                            window.location.href = 'menu.html';
+                        }, 1500);
+                    } else {
+                        showMessage(data.message || 'Erro ao alterar senha.', true);
+                    }
+                } catch (err) {
+                    console.error('Erro na requisição:', err);
+                    showMessage('Erro ao conectar ao servidor. Tente novamente.', true);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Salvar Nova Senha';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

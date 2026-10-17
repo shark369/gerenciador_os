@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de OS STAMPEX</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+            <h2>Todas as Ordens de Serviço</h2>
+            <a href="menu.html" class="back-to-menu-btn" id="backToMenuBtn">Voltar ao Menu</a>
+            <div class="search-section" id="searchFilterSection">
+                <input type="text" id="clientSearch" placeholder="Pesquisar por Nome, Nº da OS ou Revendedor...">
+                <button id="searchButton">Buscar</button>
+                <select id="statusFilter">
+                    <option value="Todas">Todos os Status</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Paga">Paga</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="todos">Todos os Clientes</option>
+                    <option value="revendedores">Apenas Revendedores</option>
+                    <option value="avulsos">Apenas Clientes Avulsos</option>
+                </select>
+            </div>
+        </div>
+        <p></p>
+        <div class="container" style="margin-top: auto"> <!-- Added margin-top for spacing -->
+            <p id="noOsMessage">Lista de todas as OS será exibida aqui!</p>
+            <div id="osListContainer">
+                <!-- Service orders will be displayed here -->
+            </div>
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button type="button" id="loadMoreBtn" class="load-more-btn">Carregar Mais Ordens de Serviço</button>
+                <span id="loadMoreStatus" class="load-more-status"></span>
+            </div>
+        </div>
+    <script src="view_os_script.js"></script>
+</body>
+</html>

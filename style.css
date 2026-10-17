@@ -1,0 +1,1343 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #8d0505;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Botão remover, igual ao editar mas com cor vermelha */
+.remove-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.18s;
+}
+.remove-btn:hover {
+    background-color: #a71d2a;
+}
+
+/* Para a lista de OS editáveis na aba de editar OS: DUAS colunas lado a lado */
+#osList ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 30px auto 0 auto;
+    padding: 0;
+    list-style: none;
+    box-sizing: border-box;
+}
+#osList ul li {
+    background: #fff;
+    padding: 18px 25px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.10);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#osList ul li hr {
+    margin: 10px 0 0 0;
+}
+
+@media (max-width: 800px) {
+    #osList ul {
+        grid-template-columns: 1fr;
+        max-width: 99vw;
+    }
+}
+
+/* Estilo do botão 'Editar' dentro dos cards das OS editáveis */
+#osList ul li .edit-btn,
+.edit-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.18s;
+}
+
+#osList ul li .edit-btn:hover,
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.login-container, .menu-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    margin: auto; /* Center vertically and horizontally within flex container */
+}
+
+/* Specific styling for the .container on add, remove, edit pages */
+/* This will apply to add_os.html, remove_os.html, edit_os.html */
+body > .container { /* Target direct children of body with class container */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: fit-content; /* Alterado para acompanhar o conteúdo (incluindo tabelas largas) */
+    min-width: 400px;   /* Valor mínimo desejável para evitar ficar muito estreito */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    margin: auto; /* Center vertically and horizontally */
+}
+
+/* Override for view_os.html containers to start from top */
+/* These are also direct children of body, but we want them at the top */
+/* The margin-top: 20px on the second container in view_os.html will still apply */
+body > .container:first-child { /* Target the first container in view_os.html */
+    margin-top: 0; /* Ensure it starts from the top */
+}
+
+/* Ensure the second container in view_os.html also starts from the top */
+body > .container:nth-child(2) { /* Target the second container in view_os.html */
+    margin-top: 20px; /* Keep the spacing between the two containers */
+}
+
+.menu-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-container li {
+    margin-bottom: 10px;
+}
+
+.menu-container a {
+    display: block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    text-align: center;
+
+}
+
+.menu-container a:hover {
+    background-color: #0056b3;
+}
+
+.container {
+    width: fit-content; /* Alterado para crescer junto com o conteúdo/tabela */
+    min-width: 400px;   /* Valor mínimo para não ficar muito estreito */
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+    align-items: stretch; /* Make children take full width */
+    text-align: center; /* Align content to left within container */
+}
+
+.login-container h2,
+.container h2 { /* Apply to h2 in both login and general containers */
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center; /* Ensure h2 is centered */
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.input-group input[type="text"],
+.input-group input[type="password"],
+.input-group input[type="number"],
+.input-group input[type="date"],
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.header-section, .summary-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.header-section .input-group, .summary-section .input-group {
+    flex: 1;
+    min-width: 120px; /* Adjust as needed */
+}
+
+.product-item {
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.product-item .input-group {
+    flex: 1;
+    min-width: 100px;
+    margin-bottom: 0; /* Override default margin */
+}
+
+.product-item .remove-product-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.product-item .remove-product-btn:hover {
+    background-color: #c82333;
+}
+
+#addProductBtn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: auto;
+    margin-top: 10px;
+}
+
+#addProductBtn:hover {
+    background-color: #218838;
+}
+
+
+
+.search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-section input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+.search-section button,
+.search-section select {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-section button:hover {
+    background-color: #0056b3;
+}
+
+.client-group {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+    text-align: left;
+}
+
+.client-group h3 {
+    margin-top: 0;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.client-group ul, #osList ul { /* Apply to both grouped lists and the remove list */
+    list-style: none;
+    padding: 0;
+    display: grid; /* Enable grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 columns, responsive */
+    gap: 20px; /* Space between grid items */
+}
+
+.client-group li, #osList li { /* Apply to both grouped list items and the remove list items */
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px; /* Slightly more rounded */
+    padding: 15px; /* More padding */
+    margin-bottom: 0; /* Remove individual margin as gap handles spacing */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Stronger shadow */
+    display: flex; /* Use flex for internal content alignment */
+    flex-direction: column;
+    justify-content: space-between; /* Push button to bottom */
+    height: auto; /* Allow height to adjust */
+    position: relative;
+}
+
+.client-group li hr {
+    border: none;
+    border-top: 1px dashed #ddd;
+    margin: 10px 0;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.submit-button-style {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.submit-button-style:hover {
+    background-color: #0056b3;
+}
+
+.back-to-menu-btn {
+    display: block; /* Make it a block element to use margin: auto for centering */
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding for box format */
+    border-radius: 8px; /* Rounded borders */
+    text-decoration: none; /* Remove underline */
+    margin: 10px auto 20px auto; /* Center horizontally with auto margins, add vertical spacing */
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    width: fit-content; /* Shrink to content width */
+}
+
+.back-to-menu-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+#logoutButton {
+    background-color: #dc3545; /* Red background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding for box format */
+    border: none;
+    border-radius: 8px; /* Rounded borders */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: block; /* Make it a block element to use margin: auto for centering */
+    margin: 20px auto 0 auto; /* Center horizontally with auto margins, add top spacing */
+    width: fit-content; /* Shrink to content width */
+}
+
+#logoutButton:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+/* Print-specific styles */
+.print-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    page-break-inside: avoid;
+}
+
+
+.td-quantity {
+    text-align: center;
+}
+
+.print-header {
+    text-align: center;
+    margin-bottom: 15px; /* Reduced margin */
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+
+.print-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.print-header p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.os-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.os-details div {
+    width: 48%;
+}
+
+.os-details p {
+    margin: 5px 0;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.products-table th, .products-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.products-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.summary {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.summary p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.summary .total {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.print-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 12px;
+    color: #777;
+}
+
+.reference-image-container {
+    margin-top: 20px;
+}
+
+.reference-image-container h4 {
+    margin-bottom: 10px;
+}
+
+#image-box {
+    border: 2px dashed #ccc;
+    padding: 10px;
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+}
+
+#image-box:empty::before {
+    content: "Cole a imagem aqui";
+    color: #aaa;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+#pastedImage {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.print-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.checkbox-container {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-container:hover {
+    background-color: #0056b3;
+}
+
+.checkbox-container label {
+    margin-bottom: 0;
+    color: white;
+    font-size: 16px;
+}
+
+.print-actions button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.print-actions button:hover {
+    background-color: #0056b3;
+}
+
+@media print {
+    @page {
+        size: auto;
+        margin: 0;
+    }
+    body {
+        background-color: #fff;
+    }
+    #print-area {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        gap: 2%; /* Add space between the copies */
+    }
+    .container, .print-actions, .back-to-menu-btn {
+        display: none !important;
+    }
+    .print-container {
+        width: 100%;
+        margin: 0;
+        padding: 10px; /* Reduced padding */
+        border: none;
+        box-shadow: none;
+        font-size: 12px; /* Reduced base font size */
+        line-height: 1.2; /* Tighter line height */
+    }
+    .print-header h2 {
+        font-size: 20px; /* Reduced header font size */
+        margin-bottom: 5px;
+    }
+    .os-details {
+        font-size: 11px; /* Reduced details font size */
+        margin-bottom: 10px;
+    }
+    .products-table th, .products-table td {
+        padding: 4px; /* Reduced cell padding */
+        font-size: 10px; /* Reduced table font size */
+    }
+    .summary p {
+        font-size: 12px; /* Reduced summary font size */
+        margin: 2px 0;
+    }
+    .summary .total {
+        font-size: 14px; /* Reduced total font size */
+    }
+    #image-box {
+        min-height: 100px; /* Reduced image box height */
+    }
+    /* Default state: only production copy is visible and takes full width */
+    #production-copy {
+        width: 100%;
+        page-break-inside: avoid;
+    }
+    #client-copy {
+        display: none; /* Hide client copy by default */
+    }
+
+    /* State when printing both copies */
+    #print-area.printing-both-copies #client-copy {
+        display: block;
+        width: 45%; /* Reduce width to make space for gap */
+        page-break-inside: avoid;
+    }
+    #print-area.printing-both-copies #production-copy {
+        width: 45%; /* Reduce width to make space for gap */
+    }
+    /* Adjust client copy for smaller space */
+    #print-area.printing-both-copies #client-copy .os-details {
+        flex-direction: column; /* Stack details vertically */
+    }
+    #print-area.printing-both-copies #client-copy .os-details div {
+        width: 100%; /* Make detail sections full width */
+    }
+    #print-area.printing-both-copies #client-copy .products-table,
+    #print-area.printing-both-copies #client-copy .summary {
+        font-size: 11px; /* Reduce font size for table and summary */
+    }
+    #print-area.printing-both-copies #client-copy .products-table th,
+    #print-area.printing-both-copies #client-copy .products-table td {
+        padding: 3px; /* Reduce padding */
+    }
+    #print-area.printing-both-copies #client-copy .summary {
+        text-align: left; /* Align summary to the left */
+    }
+    .products-table th, .products-table td {
+        padding: 4px;
+    }
+    .print-header h2 {
+        font-size: 22px;
+    }
+    .print-header {
+        margin-bottom: 10px;
+    }
+    .os-details {
+        margin-bottom: 10px;
+    }
+.no-print {
+        display: none !important;
+    }
+}
+
+.entregue-btn {
+    position: absolute;
+    bottom: 45px;
+    right: 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#revendedoresTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+#revendedoresTable th {
+    background-color: #1976d2;
+    color: #fff;
+    padding: 13px 12px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    border-bottom: 2px solid #1257a6;
+}
+
+#revendedoresTable td {
+    padding: 11px 12px;
+    border-bottom: 1px solid #e3eaf0;
+    vertical-align: middle;
+    font-size: 0.97rem;
+    white-space: nowrap;
+}
+
+#revendedoresTable tbody tr:nth-child(even) {
+    background-color: #f4f7fa;
+}
+
+#revendedoresTable tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Flexbox para ações */
+#revendedoresTable td:last-child {
+    /* Supondo que a coluna de ações é a última */
+    display: flex;
+    gap: 9px;
+    align-items: center;
+}
+
+/* Botão padrão na tabela de ações */
+#revendedoresTable .action-btn {
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 6px 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.17s;
+    font-size: 0.96em;
+    text-decoration: none; /* caso seja <a> */
+}
+
+#revendedoresTable .action-btn:hover {
+    background-color: #1560a8;
+}
+
+/* =========================
+   RELATÓRIOS (FORNECEDORES)
+   ========================= */
+
+body.reports-page {
+    min-height: 100vh;
+    height: auto;
+    align-items: stretch;
+    background: linear-gradient(180deg, #7f0202 0%, #8d0505 100%);
+    padding: 16px 0 28px;
+}
+
+body.reports-page > .reports-container {
+    width: min(96vw, 1450px) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    box-sizing: border-box;
+    background: #f4f7fb;
+    border-radius: 14px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.reports-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reports-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reports-title-wrap h2 {
+    margin-bottom: 4px;
+}
+
+.reports-note,
+.reports-sub-note,
+.report-meta {
+    color: #334155;
+    margin: 4px 0 12px;
+    text-align: left;
+}
+
+.reports-note {
+    background: #eaf2ff;
+    border: 1px solid #cbddff;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.report-box {
+    border: 1px solid #d9e3ef;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    background: #fcfdff;
+    box-shadow: 0 5px 18px rgba(18, 87, 166, 0.07);
+}
+
+.report-box h3 {
+    margin: 0 0 8px;
+    color: #1257a6;
+    font-size: 1.12rem;
+}
+
+.reports-tab-buttons {
+    display: inline-flex;
+    gap: 6px;
+    background: #e8eef8;
+    padding: 6px;
+    border-radius: 10px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    width: fit-content;
+}
+
+.reports-tab-btn {
+    border: none;
+    background: transparent;
+    color: #1f3b66;
+    font-size: 0.94rem;
+    font-weight: 700;
+    padding: 9px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.reports-tab-btn:hover {
+    background: rgba(25, 118, 210, 0.1);
+}
+
+.reports-tab-btn.is-active {
+    background: #1976d2;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(25, 118, 210, 0.35);
+}
+
+.report-tab-panel {
+    display: none;
+}
+
+.report-tab-panel.is-active {
+    display: block;
+}
+
+.reports-filters-panel {
+    margin-top: 6px;
+}
+
+.reports-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.reports-filters-general {
+    grid-template-columns: minmax(360px, 2fr) minmax(220px, 1fr) minmax(180px, 1fr);
+    gap: 14px;
+}
+
+.report-filter-block {
+    border: 1px solid #d7e3f2;
+    border-radius: 12px;
+    padding: 12px;
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.report-filter-block-range {
+    border-left: 4px solid #1976d2;
+    background: linear-gradient(180deg, #f6fbff 0%, #ffffff 100%);
+}
+
+.report-filter-block-month {
+    border-left: 4px solid #2e7d32;
+    background: linear-gradient(180deg, #f7fcf7 0%, #ffffff 100%);
+}
+
+.report-filter-block-year {
+    border-left: 4px solid #a06a00;
+    background: linear-gradient(180deg, #fffaf0 0%, #ffffff 100%);
+}
+
+.report-filter-block-title {
+    margin: 0 0 4px;
+    font-size: 0.98rem;
+    color: #1a4e85;
+}
+
+.report-filter-block-note {
+    margin: 0 0 10px;
+    color: #475569;
+    font-size: 0.83rem;
+}
+
+.report-filter-block-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.report-filter-block-grid-range {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.report-filter-block .input-group {
+    margin-bottom: 0;
+}
+
+.date-select-row,
+.month-year-select-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.date-select-row select,
+.month-year-select-row select {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.date-select-row select[id*="Day"] {
+    max-width: 90px;
+}
+
+.date-select-row select[id*="Month"],
+.month-year-select-row select[id*="Month"] {
+    max-width: 140px;
+}
+
+.date-select-row select[id*="Year"],
+.month-year-select-row select[id*="Year"] {
+    max-width: 120px;
+}
+
+.report-results {
+    margin-top: 14px;
+}
+
+.report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.report-actions .submit-button-style {
+    width: auto;
+    min-width: 180px;
+}
+
+.report-secondary-btn,
+.report-print-btn {
+    border: 1px solid #c5d4e8;
+    border-radius: 8px;
+    background: #fff;
+    color: #234369;
+    padding: 10px 14px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.report-secondary-btn:hover,
+.report-print-btn:hover {
+    background: #f1f7ff;
+    border-color: #8eb8eb;
+}
+
+.report-print-btn {
+    border-color: #81b6e9;
+    color: #0f4f8f;
+}
+
+.report-print-btn:disabled,
+.report-secondary-btn:disabled,
+.report-actions .submit-button-style:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.report-loading {
+    margin-top: 12px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid #b8d7ff;
+    background: #ebf4ff;
+    color: #0f4f8f;
+    text-align: left;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.print-only {
+    display: none !important;
+}
+
+.reports-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 10px 0 14px;
+}
+
+.report-summary-card {
+    background: #fff;
+    border: 1px solid #dde7f5;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.report-summary-label {
+    font-size: 0.83rem;
+    color: #4a5a70;
+}
+
+.report-summary-value {
+    font-size: 1rem;
+    color: #0e407d;
+}
+
+.reports-table-wrapper {
+    overflow: auto;
+    border: 1px solid #d8e2ee;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1020px;
+}
+
+.reports-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #1976d2;
+    color: #fff;
+    text-align: left;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-bottom: 1px solid #1257a6;
+}
+
+.reports-table tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #ecf1f6;
+    font-size: 0.9rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.report-description-cell {
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reports-table tbody tr:nth-child(even) {
+    background: #fbfdff;
+}
+
+.report-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.79rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.report-status-badge.status-pendente {
+    color: #7d5a00;
+    background: #fff6d6;
+    border-color: #f3dfa1;
+}
+
+.report-status-badge.status-paga {
+    color: #155724;
+    background: #dff5e3;
+    border-color: #bde5c6;
+}
+
+.report-status-badge.status-entregue {
+    color: #155e75;
+    background: #dcf6ff;
+    border-color: #b3ebff;
+}
+
+.report-status-badge.status-default {
+    color: #3e4a59;
+    background: #edf1f5;
+    border-color: #d8e0e8;
+}
+
+.reports-empty {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px dashed #c8d7ea;
+    color: #3d4f66;
+    background: #f8fbff;
+}
+
+@media (max-width: 760px) {
+    body.reports-page > .reports-container {
+        padding: 14px !important;
+    }
+
+    .reports-tab-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .reports-tab-btn {
+        width: 100%;
+    }
+
+    .report-actions {
+        flex-direction: column;
+    }
+
+    .report-actions .submit-button-style,
+    .report-secondary-btn,
+    .report-print-btn {
+        width: 100%;
+    }
+
+    .reports-table {
+        min-width: 860px;
+    }
+
+    .reports-filters-general {
+        grid-template-columns: 1fr;
+    }
+
+    .report-filter-block-grid-range {
+        grid-template-columns: 1fr;
+    }
+
+    .date-select-row,
+    .month-year-select-row {
+        flex-wrap: wrap;
+    }
+
+    .date-select-row select,
+    .month-year-select-row select,
+    .date-select-row select[id*="Day"],
+    .date-select-row select[id*="Month"],
+    .date-select-row select[id*="Year"],
+    .month-year-select-row select[id*="Month"],
+    .month-year-select-row select[id*="Year"] {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .reports-filters-general {
+        grid-template-columns: 1fr;
+    }
+
+    .report-filter-block-grid-range {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    body.reports-page {
+        background: #fff !important;
+        padding: 0 !important;
+    }
+
+    body.reports-page > .reports-container {
+        display: block !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    .report-tab-panel {
+        display: none !important;
+    }
+
+    body[data-print-tab="converter"] #converterTabPanel,
+    body[data-print-tab="general"] #generalTabPanel {
+        display: block !important;
+    }
+
+    .report-box {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+    .report-results {
+        margin-top: 0 !important;
+    }
+
+    .report-print-header {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #999;
+        padding-bottom: 6px;
+    }
+
+    .report-print-header h3 {
+        margin: 0 0 4px;
+        color: #000;
+    }
+
+    .report-print-header p {
+        margin: 0;
+        color: #333;
+        font-size: 12px;
+    }
+
+    .report-meta {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #222;
+    }
+
+    .reports-summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .report-summary-card {
+        border: 1px solid #bbb;
+        padding: 6px;
+    }
+
+    .report-summary-label {
+        color: #333;
+    }
+
+    .report-summary-value {
+        color: #000;
+        font-size: 0.92rem;
+    }
+
+    .reports-table-wrapper {
+        border: none;
+        overflow: visible;
+    }
+
+    .reports-table {
+        min-width: 0;
+        width: 100%;
+        table-layout: fixed;
+        font-size: 10px;
+    }
+
+    .reports-table thead th {
+        position: static;
+        background: #efefef !important;
+        color: #000 !important;
+        border: 1px solid #999;
+        padding: 5px;
+        font-size: 10px;
+    }
+
+    .reports-table tbody td {
+        border: 1px solid #bcbcbc;
+        padding: 4px;
+        font-size: 10px;
+    }
+
+    .report-status-badge {
+        border: 1px solid #999 !important;
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        padding: 2px 6px;
+        font-size: 9px;
+    }
+
+    .report-description-cell {
+        white-space: normal;
+        max-width: none;
+        overflow: visible;
+        text-overflow: clip;
+    }
+}
+
+/* Estilos do Botão Carregar Mais */
+.load-more-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 25px auto 30px auto;
+    width: 100%;
+}
+
+.load-more-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease-in-out;
+}
+
+.load-more-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.load-more-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+.load-more-status {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+
