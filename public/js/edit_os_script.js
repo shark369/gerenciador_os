@@ -399,19 +399,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         editableServiceOrders.forEach(os => {
             const li = document.createElement('li');
             const converterName = os.convertername || os.converterName;
-            const converterBadge = converterName
-                ? `<span style="background-color: #ffc107; color: #212529; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin: 4px 0;">Revendedor: ${converterName}</span><br>`
+            const isConverterOrder = Boolean(os.converterid || os.converterId || converterName);
+            const converterTag = isConverterOrder
+                ? `<span class="reseller-tag" title="${converterName ? 'Revendedor: ' + converterName : 'Revendedor'}">Revendedor</span>`
                 : '';
 
             li.innerHTML = `
-                <strong>ID da OS:</strong> ${os.osid || os.osId}<br>
-                <strong>Cliente:</strong> ${os.clientname || os.clientName}<br>
-                ${converterBadge}
-                <strong>Descrição:</strong> ${os.description || 'N/A'}<br>
-                <strong>Status:</strong> ${os.status}<br>
-                <small>Criado em: ${new Date(os.createdat || os.createdAt).toLocaleString()}</small>
+                <div class="os-card-body">
+                    <p><strong>ID da OS:</strong> ${os.osid || os.osId}</p>
+                    <p><strong>Cliente:</strong> ${os.clientname || os.clientName} ${converterTag}</p>
+                    <p><strong>Descrição:</strong> ${os.description || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${os.status}</p>
+                    <small>Criado em: ${new Date(os.createdat || os.createdAt).toLocaleString()}</small>
+                </div>
                 <button class="edit-btn" data-id="${os.id}">Editar</button>
-                <hr>
             `;
             ul.appendChild(li);
         });

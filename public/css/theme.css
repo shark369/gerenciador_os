@@ -1,0 +1,712 @@
+/* =========================================================
+   Tema Global STAMPEX
+   Carregar DEPOIS de css/style.css
+   - Regras utilitárias (.reseller-tag) valem para todo o sistema
+   - Regras visuais aplicam-se somente a body.stampex-theme e
+     somente em tela (@media screen), sem interferir na impressão
+   Mesmo modelo visual das telas Adicionar / Editar / Imprimir OS
+   ========================================================= */
+
+/* ---------- Tag de Revendedor (global) ---------- */
+.reseller-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    vertical-align: middle;
+    color: #3d2b00;
+    background: #f5b301;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* Cartões de OS com conteúdo em fluxo normal (texto inline) */
+.os-card-body {
+    flex: 1;
+}
+.os-card-body p {
+    margin: 2px 0;
+}
+
+@media screen {
+    body.stampex-theme {
+        --primary: #8d0505;
+        --primary-dark: #6b0303;
+        --primary-light: #b91c1c;
+        --accent: #f5b301;
+        --success: #198754;
+        --success-light: #28a745;
+        --danger: #dc3545;
+        --text: #2b2b2b;
+        --muted: #6b6464;
+        --border: #e2d6d6;
+        --surface: #ffffff;
+        --surface-soft: #faf6f6;
+        --radius: 10px;
+        --shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+        --grad: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+
+        padding: 14px 12px 24px;
+        background: linear-gradient(180deg, #7f0202 0%, #8d0505 100%);
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+        color: var(--text);
+        box-sizing: border-box;
+        min-height: 100vh;
+    }
+
+    body.stampex-theme *,
+    body.stampex-theme *::before,
+    body.stampex-theme *::after {
+        box-sizing: border-box;
+    }
+
+    /* =====================================================
+       CARTÕES PRINCIPAIS
+       ===================================================== */
+    body.stampex-theme .container:not(.reports-container) {
+        width: 100%;
+        max-width: 960px;
+        min-width: 0;
+        margin: 0 auto;
+        padding: 0 0 18px;
+        background: var(--surface);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        text-align: left;
+    }
+
+    body.stampex-theme .container:not(.reports-container) + .container,
+    body.stampex-theme .container:not(.reports-container) + p + .container {
+        margin-top: 14px;
+    }
+
+    /* Espaçamento lateral do conteúdo dos cartões */
+    body.stampex-theme .container:not(.reports-container) > *:not(h2) {
+        margin-left: 22px;
+        margin-right: 22px;
+    }
+
+    /* Login / Menus / Senhas */
+    body.stampex-theme .login-container,
+    body.stampex-theme .menu-container,
+    body.stampex-theme .password-box,
+    body.stampex-theme .reset-box {
+        width: 100%;
+        max-width: 360px;
+        margin: auto;
+        padding: 0 0 20px;
+        background: var(--surface);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        text-align: left;
+    }
+
+    body.stampex-theme .login-container > *:not(h2),
+    body.stampex-theme .menu-container > *:not(h2),
+    body.stampex-theme .password-box > *:not(h2),
+    body.stampex-theme .reset-box > *:not(h2) {
+        margin-left: 22px;
+        margin-right: 22px;
+    }
+
+    /* Título como faixa de cabeçalho */
+    body.stampex-theme .container:not(.reports-container) > h2,
+    body.stampex-theme .login-container > h2,
+    body.stampex-theme .menu-container > h2,
+    body.stampex-theme .password-box > h2,
+    body.stampex-theme .reset-box > h2,
+    body.stampex-theme .container > h1 {
+        margin: 0 0 6px;
+        padding: 12px 22px;
+        background: var(--grad);
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-align: left;
+        border-bottom: 3px solid var(--accent);
+    }
+
+    body.stampex-theme .container > h1 {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* =====================================================
+       BOTÃO VOLTAR
+       ===================================================== */
+    body.stampex-theme .back-to-menu-btn,
+    body.stampex-theme .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        margin-top: 8px;
+        margin-bottom: 6px;
+        padding: 5px 13px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--primary);
+        background: #fbeeee;
+        border: 1px solid #efcaca;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.2s;
+    }
+    body.stampex-theme .back-to-menu-btn::before,
+    body.stampex-theme .back-button::before {
+        content: "←";
+        font-weight: 700;
+    }
+    body.stampex-theme .back-to-menu-btn:hover,
+    body.stampex-theme .back-button:hover {
+        background: #f6dada;
+        transform: translateX(-2px);
+    }
+
+    /* =====================================================
+       CAMPOS
+       ===================================================== */
+    body.stampex-theme .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    body.stampex-theme .input-group label {
+        margin: 0;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    body.stampex-theme input[type="text"],
+    body.stampex-theme input[type="password"],
+    body.stampex-theme input[type="email"],
+    body.stampex-theme input[type="number"],
+    body.stampex-theme input[type="date"],
+    body.stampex-theme select,
+    body.stampex-theme textarea {
+        width: 100%;
+        padding: 7px 10px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        color: var(--text);
+        background: #fff;
+        border: 1.5px solid var(--border);
+        border-radius: 7px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    body.stampex-theme input:focus,
+    body.stampex-theme select:focus,
+    body.stampex-theme textarea:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(141, 5, 5, 0.14);
+    }
+
+    body.stampex-theme input[readonly] {
+        background: #f4f1f1 !important;
+        color: #4b4545;
+        cursor: not-allowed;
+    }
+
+    /* Formulários de revendedor em grade compacta */
+    body.stampex-theme #addConverterForm,
+    body.stampex-theme #editConverterForm {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 4px 14px;
+        margin-top: 8px;
+        padding: 12px 14px;
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: var(--radius);
+    }
+    body.stampex-theme #addConverterForm .form-actions,
+    body.stampex-theme #editConverterForm .form-actions {
+        grid-column: 1 / -1;
+    }
+
+    /* =====================================================
+       BOTÕES
+       ===================================================== */
+    body.stampex-theme button {
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    body.stampex-theme button[type="submit"],
+    body.stampex-theme .submit-button-style {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 0.96rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        color: #fff;
+        background: var(--grad);
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(141, 5, 5, 0.3);
+        transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+    }
+    body.stampex-theme button[type="submit"]:hover:not(:disabled),
+    body.stampex-theme .submit-button-style:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(141, 5, 5, 0.4);
+    }
+    body.stampex-theme button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Botão Sair */
+    body.stampex-theme #logoutButton {
+        display: block;
+        width: calc(100% - 44px);
+        margin: 6px 22px 0;
+        padding: 9px 18px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--danger);
+        background: #fff1f2;
+        border: 1.5px solid #f6c3c8;
+        border-radius: 8px;
+        transition: background 0.2s, color 0.2s;
+    }
+    body.stampex-theme #logoutButton:hover {
+        color: #fff;
+        background: var(--danger);
+        border-color: var(--danger);
+    }
+
+    /* Links auxiliares (ex.: Esqueci minha senha) */
+    body.stampex-theme .login-container form a {
+        color: var(--primary) !important;
+        font-weight: 600;
+    }
+
+    /* Avisos e Dicas (Alterar/Recuperar Senha) */
+    body.stampex-theme .info-tip {
+        background-color: #fef9e7;
+        border-left: 4px solid var(--accent);
+        padding: 9px 12px;
+        font-size: 0.82rem;
+        color: #5c4708;
+        margin-top: 10px;
+        margin-bottom: 12px;
+        border-radius: 0 6px 6px 0;
+        line-height: 1.4;
+    }
+
+    body.stampex-theme .message-alert {
+        display: none;
+        padding: 9px 12px;
+        border-radius: 6px;
+        margin-top: 8px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+    body.stampex-theme .message-alert.error {
+        display: block;
+        background-color: #fdf2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+    body.stampex-theme .message-alert.success {
+        display: block;
+        background-color: #f0fdf4;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    /* =====================================================
+       MENUS
+       ===================================================== */
+    body.stampex-theme .menu-container nav ul {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    body.stampex-theme .menu-container nav li {
+        margin: 0;
+    }
+    body.stampex-theme .menu-container nav a {
+        display: block;
+        padding: 10px 14px;
+        font-size: 0.94rem;
+        font-weight: 600;
+        text-align: left;
+        text-decoration: none;
+        color: var(--text);
+        background: #fff !important;
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: transform 0.15s, box-shadow 0.2s, color 0.2s;
+    }
+    body.stampex-theme .menu-container nav a:hover {
+        color: var(--primary);
+        transform: translateX(3px);
+        box-shadow: 0 4px 12px rgba(141, 5, 5, 0.14);
+    }
+
+    /* =====================================================
+       BARRA DE BUSCA
+       ===================================================== */
+    body.stampex-theme .search-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+        margin-bottom: 12px !important;
+        padding: 10px 14px;
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: 9px;
+    }
+    body.stampex-theme .search-section input[type="text"] {
+        flex: 1 1 260px;
+        width: auto;
+    }
+    body.stampex-theme .search-section select {
+        flex: 0 1 auto;
+        width: auto;
+        color: var(--text);
+        background: #fff;
+    }
+    body.stampex-theme .search-section button {
+        padding: 7px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        background: var(--grad);
+        border: none;
+        border-radius: 7px;
+        transition: transform 0.15s, box-shadow 0.2s;
+    }
+    body.stampex-theme .search-section button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(141, 5, 5, 0.25);
+    }
+
+    /* =====================================================
+       CARTÕES DE OS (Ver OS / Remover OS)
+       ===================================================== */
+    body.stampex-theme #noOsMessage {
+        margin-top: 12px;
+        color: var(--muted);
+    }
+
+    body.stampex-theme .client-group {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        padding: 12px 14px;
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: var(--radius);
+    }
+    body.stampex-theme .client-group > h3 {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 10px;
+        padding-bottom: 6px;
+        font-size: 1rem;
+        color: var(--primary);
+        border-bottom: 2px solid #f2e2e2;
+    }
+    body.stampex-theme .client-group > h3 small {
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    body.stampex-theme .client-group > ul,
+    body.stampex-theme #osList > ul {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-width: none;
+    }
+
+    body.stampex-theme .client-group > ul > li,
+    body.stampex-theme #osList > ul > li {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 14px;
+        font-size: 0.86rem;
+        line-height: 1.4;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--primary);
+        border-radius: 9px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.18s, box-shadow 0.18s;
+    }
+    body.stampex-theme .client-group > ul > li:hover,
+    body.stampex-theme #osList > ul > li:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(141, 5, 5, 0.14);
+    }
+    body.stampex-theme .client-group > ul > li > hr,
+    body.stampex-theme #osList > ul > li > hr {
+        display: none;
+    }
+    body.stampex-theme .client-group li h4 {
+        margin: 6px 0 2px;
+        font-size: 0.82rem;
+        color: var(--primary);
+    }
+    body.stampex-theme .client-group li ul {
+        margin: 0 0 4px;
+        padding-left: 18px;
+    }
+    body.stampex-theme .client-group li small,
+    body.stampex-theme #osList li small {
+        color: var(--muted);
+    }
+
+    /* Ações dos cartões */
+    body.stampex-theme .os-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    body.stampex-theme .os-actions .status-select {
+        flex: 1 1 120px;
+    }
+    body.stampex-theme .entregue-btn {
+        position: static;
+        flex: 1 1 140px;
+        padding: 7px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(120deg, var(--success), #22a95e);
+        border: none;
+        border-radius: 7px;
+    }
+
+    body.stampex-theme #osList .remove-btn,
+    body.stampex-theme #osList .edit-btn {
+        display: block;
+        width: 100%;
+        margin-top: 8px;
+        padding: 8px 14px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border-radius: 7px;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    body.stampex-theme #osList .remove-btn {
+        color: var(--danger);
+        background: #fff1f2;
+        border: 1.5px solid #f6c3c8;
+    }
+    body.stampex-theme #osList .remove-btn:hover {
+        color: #fff;
+        background: var(--danger);
+        border-color: var(--danger);
+    }
+
+    /* Carregar mais */
+    body.stampex-theme .load-more-btn {
+        background: var(--grad);
+        border-radius: 8px;
+    }
+    body.stampex-theme .load-more-btn:hover {
+        background: var(--grad);
+        box-shadow: 0 6px 16px rgba(141, 5, 5, 0.35);
+    }
+
+    /* =====================================================
+       TABELA DE REVENDEDORES
+       ===================================================== */
+    body.stampex-theme #revendedoresTable {
+        width: auto;
+        margin-top: 4px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        box-shadow: none;
+        overflow: hidden;
+    }
+    body.stampex-theme #revendedoresTable th {
+        padding: 9px 12px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #fff;
+        background: var(--grad);
+        border-bottom: 3px solid var(--accent);
+    }
+    body.stampex-theme #revendedoresTable td {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f0e6e6;
+    }
+    body.stampex-theme #revendedoresTable tbody tr:nth-child(even) {
+        background: var(--surface-soft);
+    }
+    body.stampex-theme #revendedoresTable tbody tr:hover {
+        background: #fbeeee;
+    }
+    body.stampex-theme #revendedoresTable .edit-btn,
+    body.stampex-theme #revendedoresTable .remove-btn {
+        padding: 5px 12px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 6px;
+    }
+    body.stampex-theme #revendedoresTable .edit-btn {
+        color: #fff;
+        background: var(--grad);
+        border: none;
+    }
+    body.stampex-theme #revendedoresTable .remove-btn {
+        color: var(--danger);
+        background: #fff1f2;
+        border: 1.5px solid #f6c3c8;
+    }
+    body.stampex-theme #revendedoresTable .remove-btn:hover {
+        color: #fff;
+        background: var(--danger);
+    }
+
+    /* =====================================================
+       RELATÓRIOS (recolorização para a paleta Stampex)
+       ===================================================== */
+    body.stampex-theme.reports-page {
+        padding: 14px 0 24px;
+    }
+    body.stampex-theme.reports-page > .reports-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+    }
+    body.stampex-theme .reports-title-wrap h2 {
+        margin: 0 0 4px;
+        color: var(--primary);
+        text-align: left;
+    }
+    body.stampex-theme .reports-header .back-to-menu-btn {
+        margin-left: 0;
+    }
+    body.stampex-theme .reports-note {
+        background: #fdf6e3;
+        border-color: #f1dfa6;
+        color: #4a3b10;
+    }
+    body.stampex-theme .report-box {
+        background: var(--surface-soft);
+        border-color: #eadfdf;
+        box-shadow: 0 4px 14px rgba(141, 5, 5, 0.06);
+    }
+    body.stampex-theme .report-box h3,
+    body.stampex-theme .report-filter-block-title {
+        color: var(--primary);
+    }
+    body.stampex-theme .reports-tab-buttons {
+        background: #f3e6e6;
+    }
+    body.stampex-theme .reports-tab-btn {
+        color: var(--primary-dark);
+    }
+    body.stampex-theme .reports-tab-btn:hover {
+        background: rgba(141, 5, 5, 0.08);
+    }
+    body.stampex-theme .reports-tab-btn.is-active {
+        color: #fff;
+        background: var(--grad);
+        box-shadow: 0 3px 10px rgba(141, 5, 5, 0.35);
+    }
+    body.stampex-theme .report-filter-block {
+        border-color: #eadfdf;
+    }
+    body.stampex-theme .report-filter-block-range {
+        border-left-color: var(--primary);
+        background: linear-gradient(180deg, #fdf5f5 0%, #ffffff 100%);
+    }
+    body.stampex-theme .report-actions .submit-button-style {
+        width: auto;
+        margin-top: 0;
+    }
+    body.stampex-theme .report-secondary-btn,
+    body.stampex-theme .report-print-btn {
+        color: var(--primary);
+        border-color: #efcaca;
+    }
+    body.stampex-theme .report-secondary-btn:hover,
+    body.stampex-theme .report-print-btn:hover {
+        background: #fbeeee;
+        border-color: var(--primary-light);
+    }
+    body.stampex-theme .report-loading {
+        color: var(--primary);
+        background: #fbeeee;
+        border-color: #efcaca;
+    }
+    body.stampex-theme .report-summary-card {
+        border-color: #eadfdf;
+        border-left: 4px solid var(--primary);
+    }
+    body.stampex-theme .report-summary-value {
+        color: var(--primary-dark);
+    }
+    body.stampex-theme .reports-table-wrapper {
+        border-color: #eadfdf;
+    }
+    body.stampex-theme .reports-table thead th {
+        background: var(--primary);
+        border-bottom-color: var(--primary-dark);
+    }
+    body.stampex-theme .reports-table tbody tr:nth-child(even) {
+        background: var(--surface-soft);
+    }
+    body.stampex-theme .reports-empty {
+        background: var(--surface-soft);
+        border-color: #e2c9c9;
+        color: var(--muted);
+    }
+
+    /* =====================================================
+       RESPONSIVO
+       ===================================================== */
+    @media (max-width: 720px) {
+        body.stampex-theme {
+            padding: 10px 6px 20px;
+        }
+        body.stampex-theme .container:not(.reports-container) > *:not(h2) {
+            margin-left: 12px;
+            margin-right: 12px;
+        }
+        body.stampex-theme #revendedoresTable {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+}

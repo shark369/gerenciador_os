@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const clientBalance = groupedOrders[clientName].balance;
             const hasConverter = clientOrders.some(os => Boolean(os.converterid || os.converterId || os.convertername || os.converterName));
             const converterTag = hasConverter
-                ? `<span style="background-color: #ffc107; color: #212529; font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 12px; margin-left: 8px; vertical-align: middle;">REVENDEDOR</span>`
+                ? `<span class="reseller-tag">Revendedor</span>`
                 : '';
 
             const clientGroupDiv = document.createElement('div');
@@ -198,11 +198,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const converterName = os.convertername || os.converterName;
                 const isDifferentFromClient = converterName && converterName.trim().toLowerCase() !== String(clientName).trim().toLowerCase();
                 const converterInfo = isDifferentFromClient
-                    ? `<span style="background-color: #fff3cd; color: #856404; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin: 3px 0; border: 1px solid #ffeeba;">Revendedor: ${converterName}</span><br>`
+                    ? `<p><span class="reseller-tag" style="margin-left:0;">Revendedor</span> ${converterName}</p>`
                     : '';
 
                 const li = document.createElement('li');
                 li.innerHTML = `
+                    <div class="os-card-body">
                     <strong>ID da OS:</strong> ${os.osid || os.osId}<br>
                     <strong>Celular:</strong> ${os.clientphone || os.clientPhone || 'N/A'}<br>
                     ${converterInfo}
@@ -213,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <strong>Valor Total da OS:</strong> R$ ${totalVal.toFixed(2)}<br>
                     <strong>Total a Pagar:</strong> R$ ${totalDue.toFixed(2)}<br>
                     <small>Criado por: ${os.createdby || os.createdBy || 'N/A'} em: ${new Date(os.createdat || os.createdAt).toLocaleString()}</small>
+                    </div>
                 `;
 
                 const actionsDiv = document.createElement('div');
@@ -243,7 +245,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 
                 li.appendChild(actionsDiv);
-                li.innerHTML += `<hr>`;
                 ul.appendChild(li);
             });
             clientGroupDiv.appendChild(ul);

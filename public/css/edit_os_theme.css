@@ -178,22 +178,32 @@ body.edit-os-page #osList ul li p {
     line-height: 1.35;
 }
 
+body.edit-os-page #osList ul li .os-card-body {
+    flex: 1;
+}
+
 body.edit-os-page #osList ul li .edit-btn {
-    align-self: flex-start;
-    margin-top: 6px;
-    padding: 5px 14px;
-    font-size: 0.84rem;
-    font-weight: 600;
+    display: block;
+    width: 100%;
+    align-self: stretch;
+    margin-top: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
     color: #fff;
     background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-light) 100%);
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
     transition: transform 0.15s, box-shadow 0.2s;
 }
 body.edit-os-page #osList ul li .edit-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(141, 5, 5, 0.3);
+}
+body.edit-os-page #osList ul li hr {
+    display: none;
 }
 
 /* ---------- Formulário de Edição (editFormDiv) ---------- */

@@ -166,14 +166,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ul = document.createElement('ul');
         serviceOrders.forEach(os => {
             const li = document.createElement('li');
+            const converterName = os.convertername || os.converterName;
+            const isConverterOrder = Boolean(os.converterid || os.converterId || converterName);
+            const converterTag = isConverterOrder
+                ? `<span class="reseller-tag" title="${converterName ? 'Revendedor: ' + converterName : 'Revendedor'}">Revendedor</span>`
+                : '';
             li.innerHTML = `
-                <p><strong>ID da OS:</strong> ${os.osid || os.osId}</p>
-                <p><strong>Cliente:</strong> ${os.clientname || os.clientName}</p>
-                <p><strong>Descrição:</strong> ${os.description || 'N/A'}</p>
-                <p><strong>Status:</strong> ${os.status}</p>
-                <small>Criado em: ${new Date(os.createdat || os.createdAt).toLocaleString()}</small>
+                <div class="os-card-body">
+                    <p><strong>ID da OS:</strong> ${os.osid || os.osId}</p>
+                    <p><strong>Cliente:</strong> ${os.clientname || os.clientName} ${converterTag}</p>
+                    <p><strong>Descrição:</strong> ${os.description || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${os.status}</p>
+                    <small>Criado em: ${new Date(os.createdat || os.createdAt).toLocaleString()}</small>
+                </div>
                 <button class="remove-btn" data-id="${os.id}">Remover</button>
-                <hr>
             `;
             ul.appendChild(li);
         });
