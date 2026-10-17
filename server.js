@@ -2,7 +2,12 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 const fs = require('fs');
-const logStream = fs.createWriteStream('log.txt', { flags: 'a' });
+const path = require('path');
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+}
+const logStream = fs.createWriteStream(path.join(logDir, 'log.txt'), { flags: 'a' });
 console.log = function(...args) {
   const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
   logStream.write(new Date().toISOString() + ': ' + message + '\n');
@@ -15,7 +20,6 @@ const { Pool } = require('pg'); // Changed from mysql2 to pg
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const JACIRA_USERNAME = 'jacira';
@@ -78,19 +82,34 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(__dirname, { dotfiles: 'ignore' }));
+// Servir arquivos estáticos de public/ (CSS, JS, Assets)
+app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'ignore' }));
 
+// Mapeamentos diretos de pastas estáticas
+app.use('/css', express.static(path.join(__dirname, 'public', 'css'), { dotfiles: 'ignore' }));
+app.use('/js', express.static(path.join(__dirname, 'public', 'js'), { dotfiles: 'ignore' }));
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets'), { dotfiles: 'ignore' }));
+
+// Retrocompatibilidade total (caso alguma requisição solicite direto sem prefixo)
+app.use(express.static(path.join(__dirname, 'public', 'css'), { dotfiles: 'ignore' }));
+app.use(express.static(path.join(__dirname, 'public', 'js'), { dotfiles: 'ignore' }));
+app.use(express.static(path.join(__dirname, 'public', 'assets'), { dotfiles: 'ignore' }));
+
+// Servir páginas HTML da pasta views/
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.get('/:filename', (req, res) => {
     const { filename } = req.params;
     if (filename.endsWith('.html')) {
-        res.sendFile(path.join(__dirname, filename));
-    } else {
-        res.status(404).send('File not found');
+        const viewFile = path.join(__dirname, 'views', filename);
+        if (fs.existsSync(viewFile)) {
+            return res.sendFile(viewFile);
+        }
+        return res.status(404).send('Página não encontrada');
     }
+    res.status(404).send('Arquivo não encontrado');
 });
 
 // PostgreSQL Connection Pool

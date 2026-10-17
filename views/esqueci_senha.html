@@ -1,24 +1,34 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alterar Senha - Gerenciador de OS STAMPEX</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Recuperar Senha - Gerenciador de OS STAMPEX</title>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        .password-box {
+        .reset-box {
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 340px;
+            width: 360px;
             margin: auto;
             box-sizing: border-box;
         }
-        .password-box h2 {
-            margin-bottom: 20px;
+        .reset-box h2 {
+            margin-bottom: 12px;
             color: #333;
             text-align: center;
+        }
+        .info-tip {
+            background-color: #e8f4fd;
+            border-left: 4px solid #007bff;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.4;
         }
         .message-alert {
             display: none;
@@ -43,19 +53,23 @@
     </style>
 </head>
 <body>
-    <div class="password-box">
-        <h2>Alterar Senha</h2>
+    <div class="reset-box">
+        <h2>Recuperar Senha</h2>
+
+        <div class="info-tip">
+            Para redefinir sua senha, informe seu usuário, a <strong>Chave de Segurança do Administrador</strong> e a sua nova senha.
+        </div>
 
         <div id="messageAlert" class="message-alert"></div>
 
-        <form id="changePasswordForm">
+        <form id="resetPasswordForm">
             <div class="input-group">
                 <label for="username">Usuário:</label>
-                <input type="text" id="username" name="username" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                <input type="text" id="username" name="username" required autocomplete="username">
             </div>
             <div class="input-group">
-                <label for="currentPassword">Senha Atual:</label>
-                <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password">
+                <label for="securityKey">Chave de Segurança (Admin):</label>
+                <input type="password" id="securityKey" name="securityKey" placeholder="Chave fornecida pelo admin" required>
             </div>
             <div class="input-group">
                 <label for="newPassword">Nova Senha:</label>
@@ -65,27 +79,15 @@
                 <label for="confirmPassword">Confirmar Nova Senha:</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
             </div>
-            <button type="submit" id="submitBtn">Salvar Nova Senha</button>
+            <button type="submit" id="submitBtn">Redefinir Senha</button>
         </form>
 
-        <a href="menu.html" class="back-to-menu-btn" style="margin-top: 15px;">Voltar ao Menu</a>
+        <a href="index.html" class="back-to-menu-btn" style="margin-top: 15px;">Voltar ao Login</a>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const username = sessionStorage.getItem('username');
-            const userRole = sessionStorage.getItem('userRole');
-
-            if (!username || !userRole) {
-                alert('Você precisa estar logado para alterar sua senha.');
-                window.location.href = 'index.html';
-                return;
-            }
-
-            const usernameInput = document.getElementById('username');
-            usernameInput.value = username;
-
-            const form = document.getElementById('changePasswordForm');
+            const form = document.getElementById('resetPasswordForm');
             const messageAlert = document.getElementById('messageAlert');
             const submitBtn = document.getElementById('submitBtn');
 
@@ -98,11 +100,12 @@
                 e.preventDefault();
                 messageAlert.style.display = 'none';
 
-                const currentPassword = document.getElementById('currentPassword').value.trim();
+                const username = document.getElementById('username').value.trim();
+                const securityKey = document.getElementById('securityKey').value.trim();
                 const newPassword = document.getElementById('newPassword').value.trim();
                 const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-                if (!currentPassword || !newPassword || !confirmPassword) {
+                if (!username || !securityKey || !newPassword || !confirmPassword) {
                     showMessage('Preencha todos os campos.', true);
                     return;
                 }
@@ -118,15 +121,15 @@
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Salvando...';
+                submitBtn.textContent = 'Redefinindo...';
 
                 try {
-                    const response = await fetch('/api/change-password', {
+                    const response = await fetch('/api/reset-password', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             username,
-                            currentPassword,
+                            securityKey,
                             newPassword
                         })
                     });
@@ -134,21 +137,20 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        showMessage(data.message || 'Senha alterada com sucesso!', false);
+                        showMessage(data.message || 'Senha redefinida com sucesso!', false);
                         form.reset();
-                        usernameInput.value = username;
                         setTimeout(() => {
-                            window.location.href = 'menu.html';
-                        }, 1500);
+                            window.location.href = 'index.html';
+                        }, 2000);
                     } else {
-                        showMessage(data.message || 'Erro ao alterar senha.', true);
+                        showMessage(data.message || 'Erro ao redefinir senha.', true);
                     }
                 } catch (err) {
                     console.error('Erro na requisição:', err);
-                    showMessage('Erro ao conectar ao servidor. Tente novamente.', true);
+                    showMessage('Erro de comunicação com o servidor. Tente novamente.', true);
                 } finally {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Salvar Nova Senha';
+                    submitBtn.textContent = 'Redefinir Senha';
                 }
             });
         });
