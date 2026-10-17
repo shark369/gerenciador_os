@@ -1,0 +1,251 @@
+/* =========================================================
+   Tema visual de Tela - Imprimir OS (STAMPEX)
+   Carregar DEPOIS de css/style.css
+   Escopo: body.print-os-page (apenas na exibição de tela)
+   Preserva 100% das regras @media print para impressão física
+   ========================================================= */
+
+@media screen {
+    body.print-os-page {
+        --primary: #8d0505;
+        --primary-dark: #6b0303;
+        --primary-light: #b91c1c;
+        --accent: #f5b301;
+        --success: #198754;
+        --success-light: #28a745;
+        --text: #2b2b2b;
+        --muted: #6b6464;
+        --border: #e2d6d6;
+        --surface: #ffffff;
+        --surface-soft: #faf6f6;
+        --radius: 12px;
+        --shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+
+        padding: 14px 12px 30px;
+        background: linear-gradient(180deg, #7f0202 0%, #8d0505 100%);
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+        color: var(--text);
+        box-sizing: border-box;
+        min-height: 100vh;
+    }
+
+    body.print-os-page *,
+    body.print-os-page *::before,
+    body.print-os-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* Botão Voltar ao Menu */
+    body.print-os-page .back-to-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 6px auto 14px auto;
+        padding: 6px 16px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--primary);
+        background: #fbeeee;
+        border: 1px solid #efcaca;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    body.print-os-page .back-to-menu-btn::before {
+        content: "←";
+        font-weight: 700;
+    }
+    body.print-os-page .back-to-menu-btn:hover {
+        background: #f6dada;
+        transform: translateX(-2px);
+    }
+
+    /* Container das vias da OS na tela */
+    body.print-os-page #print-area {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    body.print-os-page #print-area.printing-both-copies {
+        flex-direction: row;
+        max-width: 1200px;
+        gap: 16px;
+    }
+
+    body.print-os-page .print-container {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 28px;
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        font-family: inherit;
+    }
+
+    /* Faixa de título da via da produção */
+    body.print-os-page .print-header {
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+    }
+    body.print-os-page .print-header h2 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Detalhes da OS */
+    body.print-os-page .os-details {
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: 9px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+    body.print-os-page .os-details strong {
+        color: var(--primary-dark);
+    }
+
+    /* Tabela de produtos na tela */
+    body.print-os-page .products-table {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        margin-bottom: 16px;
+    }
+    body.print-os-page .products-table th {
+        background: #f9f3f3;
+        color: var(--primary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-color: #ecdcdc;
+        padding: 9px 12px;
+    }
+    body.print-os-page .products-table td {
+        border-color: #f0e6e6;
+        padding: 8px 12px;
+        font-size: 0.88rem;
+    }
+
+    /* Resumo / Totais na tela */
+    body.print-os-page .summary {
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: 9px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+    }
+    body.print-os-page .summary p {
+        margin: 4px 0;
+        font-size: 0.92rem;
+    }
+    body.print-os-page .summary .total {
+        color: var(--success);
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid #e2d6d6;
+    }
+
+    /* Caixa de Imagem de Referência */
+    body.print-os-page .reference-image-container {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: var(--surface-soft);
+        border: 1px solid #eadfdf;
+        border-radius: 9px;
+    }
+    body.print-os-page .reference-image-container h4 {
+        margin: 0 0 8px 0;
+        color: var(--primary);
+        font-size: 0.92rem;
+    }
+    body.print-os-page #image-box {
+        border: 2px dashed #cca8a8;
+        background: #fff;
+        border-radius: 8px;
+        min-height: 130px;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    body.print-os-page #image-box:hover {
+        border-color: var(--primary-light);
+        background: #fdfafa;
+    }
+    body.print-os-page #image-box:empty::before {
+        content: "📋 Clique aqui e pressione Ctrl+V para colar a imagem de referência";
+        color: #8c7878;
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+
+    /* Barra de Ações na tela */
+    body.print-os-page .print-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        margin: 20px auto 10px auto;
+        padding: 10px 18px;
+        max-width: 480px;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(8px);
+    }
+
+    /* Checkbox "Imprimir via do Cliente" */
+    body.print-os-page .checkbox-container {
+        background: #fdf5f5;
+        border: 1.5px solid #eecaca;
+        color: var(--text);
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    body.print-os-page .checkbox-container:hover {
+        background: #fceeee;
+        border-color: var(--primary-light);
+    }
+    body.print-os-page .checkbox-container input[type="checkbox"] {
+        accent-color: var(--primary);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+    body.print-os-page .checkbox-container label {
+        color: var(--text);
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+
+    /* Botão Imprimir */
+    body.print-os-page .print-actions button {
+        background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+        color: #fff;
+        padding: 8px 22px;
+        font-size: 0.94rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(141, 5, 5, 0.3);
+        transition: transform 0.15s, box-shadow 0.2s;
+    }
+    body.print-os-page .print-actions button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(141, 5, 5, 0.4);
+    }
+}

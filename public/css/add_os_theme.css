@@ -1,0 +1,379 @@
+/* =========================================================
+   Tema visual - Adicionar OS (STAMPEX) - Versão Compacta
+   Carregar DEPOIS de css/style.css
+   Escopo: body.add-os-page (não afeta outras telas)
+   Paleta: vermelho da marca + cards brancos
+   Design compacto para visualização sem rolagem excessiva
+   ========================================================= */
+
+body.add-os-page {
+    --primary: #8d0505;          /* vermelho Stampex */
+    --primary-dark: #6b0303;
+    --primary-light: #b91c1c;
+    --accent: #f5b301;
+    --success: #198754;
+    --success-light: #28a745;
+    --danger: #dc3545;
+    --danger-hover: #c82333;
+    --text: #2b2b2b;
+    --muted: #6b6464;
+    --border: #e2d6d6;
+    --surface: #ffffff;
+    --surface-soft: #faf6f6;
+    --radius: 10px;
+    --shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+
+    padding: 14px 12px 24px;
+    background: linear-gradient(180deg, #7f0202 0%, #8d0505 100%);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    color: var(--text);
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+body.add-os-page *,
+body.add-os-page *::before,
+body.add-os-page *::after {
+    box-sizing: border-box;
+}
+
+/* ---------- Cartão principal ---------- */
+body.add-os-page .container {
+    width: 100%;
+    max-width: 900px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 0 0 18px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Título como faixa de cabeçalho */
+body.add-os-page .container > h2 {
+    margin: 0;
+    padding: 12px 22px;
+    background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-align: left;
+    border-bottom: 3px solid var(--accent);
+}
+
+/* Botão voltar */
+body.add-os-page .back-to-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 22px 2px;
+    padding: 5px 13px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: #fbeeee;
+    border: 1px solid #efcaca;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+body.add-os-page .back-to-menu-btn::before {
+    content: "←";
+    font-weight: 700;
+}
+body.add-os-page .back-to-menu-btn:hover {
+    background: #f6dada;
+    transform: translateX(-2px);
+}
+
+body.add-os-page #addOsForm {
+    padding: 4px 22px 0;
+}
+
+/* ---------- Títulos de seção ---------- */
+body.add-os-page h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 6px;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+body.add-os-page h3::before {
+    content: "";
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--accent);
+}
+
+/* ---------- Campos ---------- */
+body.add-os-page .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+}
+
+body.add-os-page .input-group label {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+body.add-os-page input[type="text"],
+body.add-os-page input[type="number"],
+body.add-os-page input[type="date"],
+body.add-os-page select,
+body.add-os-page textarea {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+body.add-os-page input:hover,
+body.add-os-page select:hover,
+body.add-os-page textarea:hover {
+    border-color: #cdb8b8;
+}
+
+body.add-os-page input:focus,
+body.add-os-page select:focus,
+body.add-os-page textarea:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(141, 5, 5, 0.14);
+}
+
+body.add-os-page input[readonly] {
+    background: #f4f1f1;
+    color: #4b4545;
+    cursor: not-allowed;
+}
+
+body.add-os-page textarea {
+    min-height: 48px;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+/* ---------- Cabeçalho da OS (cliente, celular, ID, data) ---------- */
+body.add-os-page .header-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 14px;
+    padding: 12px 14px;
+    margin-top: 6px;
+    background: var(--surface-soft);
+    border: 1px solid #eadfdf;
+    border-radius: var(--radius);
+}
+
+/* Checkbox "Revendedores" */
+body.add-os-page .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    align-self: end;
+    padding: 6px 10px;
+    background: #fff;
+    border: 1.5px dashed #d2bcbc;
+    border-radius: 7px;
+}
+body.add-os-page .checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+body.add-os-page .checkbox-group label {
+    cursor: pointer;
+    color: var(--text);
+    text-transform: none;
+    font-size: 0.88rem;
+}
+
+/* Seletor de Revendedor dinâmico */
+body.add-os-page #converterSelectorGroup[style*="display: block"] {
+    display: flex !important;
+}
+
+/* ---------- Produtos ---------- */
+body.add-os-page #productsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+body.add-os-page .product-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin: 0;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s;
+}
+body.add-os-page .product-item:hover {
+    box-shadow: 0 4px 12px rgba(141, 5, 5, 0.12);
+}
+body.add-os-page .product-item hr {
+    display: none;
+}
+
+/* ---------- Botões ---------- */
+body.add-os-page button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s, color 0.2s;
+}
+
+body.add-os-page .remove-product-btn {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--danger);
+    background: #fff1f2;
+    border: 1.5px solid #f6c3c8;
+    border-radius: 6px;
+}
+body.add-os-page .remove-product-btn:hover {
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+body.add-os-page #addProductBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    margin-top: 6px;
+    padding: 6px 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--success);
+    background: #eaf7ef;
+    border: 1.5px dashed #86c9a3;
+    border-radius: 7px;
+}
+body.add-os-page #addProductBtn::before {
+    content: "+";
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+body.add-os-page #addProductBtn:hover {
+    color: #fff;
+    background: var(--success-light);
+    border: 1.5px solid var(--success-light);
+}
+
+/* ---------- Resumo / valores ---------- */
+body.add-os-page .summary-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px 14px;
+    padding: 10px 14px;
+    margin-top: 6px;
+    background: var(--surface-soft);
+    border: 1px solid #eadfdf;
+    border-radius: var(--radius);
+}
+
+body.add-os-page #totalValue,
+body.add-os-page #totalDue {
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: right;
+}
+body.add-os-page #totalValue {
+    color: var(--primary);
+    background: #fbeeee;
+    border-color: #efcaca;
+}
+body.add-os-page #totalDue {
+    color: #fff;
+    background: linear-gradient(120deg, var(--success), #22a95e);
+    border-color: var(--success);
+}
+
+/* ---------- Campos soltos abaixo do resumo (Setor, Descrição, Status) ---------- */
+body.add-os-page #addOsForm > .input-group {
+    margin-top: 8px;
+}
+
+/* ---------- Botão principal ---------- */
+body.add-os-page .submit-button-style {
+    display: block;
+    width: 100%;
+    margin-top: 14px !important;
+    padding: 10px 20px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #fff;
+    background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(141, 5, 5, 0.3);
+}
+body.add-os-page .submit-button-style:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(141, 5, 5, 0.4);
+}
+body.add-os-page .submit-button-style:active:not(:disabled) {
+    transform: translateY(0);
+}
+body.add-os-page .submit-button-style:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 720px) {
+    body.add-os-page {
+        padding: 10px 6px 20px;
+    }
+    body.add-os-page .container > h2 {
+        padding: 12px 14px;
+        font-size: 1.1rem;
+    }
+    body.add-os-page .back-to-menu-btn {
+        margin: 8px 14px 0;
+    }
+    body.add-os-page #addOsForm {
+        padding: 4px 12px 0;
+    }
+    body.add-os-page .header-section,
+    body.add-os-page .summary-section {
+        padding: 10px;
+    }
+    body.add-os-page .product-item {
+        grid-template-columns: 1fr 1fr;
+    }
+    body.add-os-page .product-item > .input-group:first-child {
+        grid-column: 1 / -1;
+    }
+    body.add-os-page .remove-product-btn {
+        grid-column: 1 / -1;
+    }
+}

@@ -719,7 +719,10 @@ app.put('/api/serviceOrders/:id', async (req, res) => {
 // DELETE a service order
 app.delete('/api/serviceOrders/:id', async (req, res) => {
     const { id } = req.params;
-    const { username } = req.body;
+    const { username } = req.body || {};
+    if (!username) {
+        return res.status(400).json({ message: 'Usuário é obrigatório para esta operação.' });
+    }
 
     try {
         // First, check user permissions
