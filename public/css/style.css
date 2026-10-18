@@ -287,7 +287,7 @@ body > .container:nth-child(2) { /* Target the second container in view_os.html 
     margin-bottom: 15px;
 }
 
-.client-group ul, #osList ul { /* Apply to both grouped lists and the remove list */
+.client-group > ul, #osList > ul { /* Apply only to the direct OS cards grid */
     list-style: none;
     padding: 0;
     display: grid; /* Enable grid layout */
@@ -295,7 +295,7 @@ body > .container:nth-child(2) { /* Target the second container in view_os.html 
     gap: 20px; /* Space between grid items */
 }
 
-.client-group li, #osList li { /* Apply to both grouped list items and the remove list items */
+.client-group > ul > li, #osList > ul > li { /* Apply only to direct card items */
     background-color: #fff;
     border: 1px solid #eee;
     border-radius: 8px; /* Slightly more rounded */

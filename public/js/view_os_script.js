@@ -168,14 +168,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const clientGroupDiv = document.createElement('div');
             clientGroupDiv.classList.add('client-group');
-            clientGroupDiv.innerHTML = `<h3>Cliente: ${clientName} ${converterTag} <small>(Saldo: R$ ${clientBalance.toFixed(2)})</small></h3>`;
+            clientGroupDiv.innerHTML = `<h3>Cliente: ${clientName} ${converterTag} <small class="client-balance">(Saldo: R$ ${clientBalance.toFixed(2)})</small></h3>`;
             
             const ul = document.createElement('ul');
             groupedOrders[clientName].orders.forEach(os => {
                 let productsHtml = '';
                 const products = Array.isArray(os.products) ? os.products : [];
                 if (products.length > 0) {
-                    productsHtml = '<h4>Produtos:</h4><ul>';
+                    productsHtml = '<p class="os-products-title"><strong>Produtos:</strong></p><ul class="os-products-list">';
                     products.forEach(product => {
                         const productVal = parseFloat(product.value) || 0;
                         productsHtml += `<li>${product.name} (Qtd: ${product.quantity}, Valor Unitário: R$ ${productVal.toFixed(2)})</li>`;

@@ -27,6 +27,9 @@
 /* Cartões de OS com conteúdo em fluxo normal (texto inline) */
 .os-card-body {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 .os-card-body p {
     margin: 2px 0;
@@ -83,6 +86,7 @@
     body.stampex-theme .container:not(.reports-container) + .container,
     body.stampex-theme .container:not(.reports-container) + p + .container {
         margin-top: 14px;
+        padding-top: 18px;
     }
 
     /* Espaçamento lateral do conteúdo dos cartões */
@@ -118,7 +122,6 @@
     /* Título como faixa de cabeçalho */
     body.stampex-theme .container:not(.reports-container) > h2,
     body.stampex-theme .login-container > h2,
-    body.stampex-theme .menu-container > h2,
     body.stampex-theme .password-box > h2,
     body.stampex-theme .reset-box > h2,
     body.stampex-theme .container > h1 {
@@ -131,6 +134,18 @@
         letter-spacing: 0.3px;
         text-align: left;
         border-bottom: 3px solid var(--accent);
+    }
+
+    /* Título do Menu (limpo, centralizado e sem faixa pesada) */
+    body.stampex-theme .menu-container > h2 {
+        margin: 20px 22px 14px;
+        padding: 0 0 10px;
+        background: transparent;
+        color: #1f2937;
+        font-size: 1.35rem;
+        font-weight: 700;
+        text-align: center;
+        border-bottom: 2px solid #f0e6e6;
     }
 
     body.stampex-theme .container > h1 {
@@ -273,24 +288,28 @@
         cursor: not-allowed;
     }
 
-    /* Botão Sair */
+    /* Botão Sair (sólido, vermelho com texto branco e centralizado) */
     body.stampex-theme #logoutButton {
         display: block;
         width: calc(100% - 44px);
-        margin: 6px 22px 0;
-        padding: 9px 18px;
-        font-size: 0.92rem;
+        margin: 14px 22px 0;
+        padding: 10px 18px;
+        font-size: 0.95rem;
         font-weight: 700;
-        color: var(--danger);
-        background: #fff1f2;
-        border: 1.5px solid #f6c3c8;
+        text-align: center;
+        color: #ffffff;
+        background: #dc3545;
+        border: none;
         border-radius: 8px;
-        transition: background 0.2s, color 0.2s;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.25);
+        transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
     }
     body.stampex-theme #logoutButton:hover {
-        color: #fff;
-        background: var(--danger);
-        border-color: var(--danger);
+        color: #ffffff;
+        background: #c82333;
+        border: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
     }
 
     /* Links auxiliares (ex.: Esqueci minha senha) */
@@ -335,38 +354,79 @@
     }
 
     /* =====================================================
-       MENUS
+       MENUS (Botões sólidos com texto branco, sem texto vermelho)
        ===================================================== */
     body.stampex-theme .menu-container nav ul {
         list-style: none;
-        margin: 8px 0 0;
+        margin: 4px 0 0;
         padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 9px;
     }
     body.stampex-theme .menu-container nav li {
         margin: 0;
     }
     body.stampex-theme .menu-container nav a {
         display: block;
-        padding: 10px 14px;
+        padding: 11px 16px;
         font-size: 0.94rem;
         font-weight: 600;
-        text-align: left;
+        text-align: center;
         text-decoration: none;
-        color: var(--text);
-        background: #fff !important;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--primary);
+        color: #ffffff !important;
+        background: #007bff;
+        border: none;
         border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: transform 0.15s, box-shadow 0.2s, color 0.2s;
+        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.22);
+        transition: transform 0.15s, box-shadow 0.2s, background-color 0.2s;
     }
     body.stampex-theme .menu-container nav a:hover {
-        color: var(--primary);
-        transform: translateX(3px);
-        box-shadow: 0 4px 12px rgba(141, 5, 5, 0.14);
+        color: #ffffff !important;
+        background: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
+    }
+    body.stampex-theme .menu-container #reportsLink a,
+    body.stampex-theme .menu-container #reportsMenuItem a {
+        background: #17a2b8 !important;
+        box-shadow: 0 2px 6px rgba(23, 162, 184, 0.22);
+    }
+    body.stampex-theme .menu-container #reportsLink a:hover,
+    body.stampex-theme .menu-container #reportsMenuItem a:hover {
+        background: #117a8b !important;
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.35);
+    }
+    body.stampex-theme .menu-container #changePasswordLink a {
+        background: #495057 !important;
+        box-shadow: 0 2px 6px rgba(73, 80, 87, 0.22);
+    }
+    body.stampex-theme .menu-container #changePasswordLink a:hover {
+        background: #343a40 !important;
+        box-shadow: 0 4px 12px rgba(73, 80, 87, 0.35);
+    }
+    body.stampex-theme .menu-container .back-button {
+        display: block;
+        width: 100%;
+        margin: 12px 0 0;
+        padding: 10px 16px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        text-align: center;
+        color: #ffffff;
+        background: #6c757d;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(108, 117, 125, 0.22);
+        transition: background-color 0.2s, transform 0.15s;
+    }
+    body.stampex-theme .menu-container .back-button::before {
+        content: "← ";
+    }
+    body.stampex-theme .menu-container .back-button:hover {
+        background: #5a6268;
+        transform: translateY(-1px);
     }
 
     /* =====================================================
@@ -428,16 +488,19 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
         margin: 0 0 10px;
-        padding-bottom: 6px;
-        font-size: 1rem;
-        color: var(--primary);
-        border-bottom: 2px solid #f2e2e2;
+        padding-bottom: 8px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1f2937;
+        border-bottom: 2px solid #e5e7eb;
     }
-    body.stampex-theme .client-group > h3 small {
-        color: var(--muted);
+    body.stampex-theme .client-group > h3 small,
+    body.stampex-theme .client-group > h3 .client-balance {
+        color: #4b5563;
         font-weight: 600;
+        font-size: 0.9rem;
     }
 
     body.stampex-theme .client-group > ul,
@@ -460,6 +523,7 @@
         padding: 12px 14px;
         font-size: 0.86rem;
         line-height: 1.4;
+        color: #2b2b2b;
         background: #fff;
         border: 1px solid var(--border);
         border-left: 4px solid var(--primary);
@@ -476,14 +540,38 @@
     body.stampex-theme #osList > ul > li > hr {
         display: none;
     }
+    body.stampex-theme .client-group > ul > li strong {
+        color: #111827;
+    }
+    body.stampex-theme .client-group .os-products-title,
     body.stampex-theme .client-group li h4 {
         margin: 6px 0 2px;
-        font-size: 0.82rem;
-        color: var(--primary);
+        font-size: 0.88rem;
+        color: #1f2937;
+        font-weight: 700;
     }
-    body.stampex-theme .client-group li ul {
-        margin: 0 0 4px;
-        padding-left: 18px;
+    body.stampex-theme .client-group ul.os-products-list,
+    body.stampex-theme .client-group .os-card-body ul {
+        list-style: disc outside;
+        margin: 3px 0 6px 18px;
+        padding: 0;
+        display: block;
+    }
+    body.stampex-theme .client-group ul.os-products-list li,
+    body.stampex-theme .client-group .os-card-body ul li {
+        display: list-item !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 2px 0 !important;
+        margin: 0 !important;
+        color: #374151 !important;
+        font-size: 0.85rem !important;
+        line-height: 1.35 !important;
+        position: static !important;
+        height: auto !important;
+        transform: none !important;
     }
     body.stampex-theme .client-group li small,
     body.stampex-theme #osList li small {
@@ -521,17 +609,20 @@
         font-size: 0.88rem;
         font-weight: 700;
         border-radius: 7px;
-        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
     }
     body.stampex-theme #osList .remove-btn {
-        color: var(--danger);
-        background: #fff1f2;
-        border: 1.5px solid #f6c3c8;
+        color: #ffffff;
+        background: #dc3545;
+        border: none;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.22);
     }
     body.stampex-theme #osList .remove-btn:hover {
-        color: #fff;
-        background: var(--danger);
-        border-color: var(--danger);
+        color: #ffffff;
+        background: #c82333;
+        border: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(220, 53, 69, 0.35);
     }
 
     /* Carregar mais */
